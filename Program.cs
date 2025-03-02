@@ -1,6 +1,10 @@
-﻿using Spectre.Console;
+﻿using Primitive;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using Spectre.Console;
 using Spectre.Console.Cli;
 using System.ComponentModel;
+using Size = SixLabors.ImageSharp.Size;
 
 return new CommandApp<RootCommand>().Run(args);
 
@@ -24,15 +28,15 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 		[CommandArgument(3, "<Iterations>")]
 		public required int Iterations { get; set; }
 
-		[Description("Background color by hex code; averaged if not specified")]
+		[Description("Background color hex code; averaged if unspecified")]
 		[CommandOption("--background")]
 		public string? Background { get; set; }
 
-		[Description("Alpha value of shapes; optimized for if not specified")]
+		[Description("Alpha value of each shape; optimized for if unspecified")]
 		[CommandOption("--alpha")]
 		public int? Alpha { get; set; }
 
-		[Description("Dimension to resize input image")]
+		[Description("Dimension to resize input image to")]
 		[CommandOption("--input-size")]
 		[DefaultValue(256)]
 		public int InputSize { get; set; }
@@ -50,8 +54,18 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 		AnsiConsole.MarkupLine($"Shape: [blue]{settings.Shape}[/]");
 		AnsiConsole.MarkupLine($"Iterations: [blue]{settings.Iterations}[/]");
 
-		// TODO: Configure & run model then process output
+		var inputSize = new Size(settings.InputSize, settings.InputSize);
+		var outputSize = new Size(settings.OutputSize, settings.OutputSize);
 
+		using var input = Image.Load(settings.Input);
+		// How to resize relative to center of image?
+		input.Mutate(x => x.Resize(inputSize));
+
+		var model = new Model<IShape>(input);
+		for (var i = 0; i < settings.Iterations; i++) model.Add();
+		var output = model.Process(outputSize);
+
+		output.Save(settings.Output);
 		return 0;
 	}
 }

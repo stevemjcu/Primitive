@@ -1,0 +1,7 @@
+﻿namespace Primitive
+{
+	interface IShape
+	{
+
+	}
+}
