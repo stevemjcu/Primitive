@@ -3,7 +3,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace Primitive
 {
-	internal class Model<T>(Image target) where T : IShape
+	internal class Model<T>(Image target, Color background) where T : IShape
 	{
 		/// <summary>
 		/// The low resolution representation of the model's goal.
@@ -13,10 +13,10 @@ namespace Primitive
 		/// <summary>
 		/// The low resolution representation of the model's canvas.
 		/// </summary>
-		public Image Current { get; } = new Image<Rgba64>(target.Width, target.Height);
+		public Image Current { get; } = new Image<Rgba32>(target.Width, target.Height, background);
 
 		/// <summary>
-		/// The list of shapes which have been added to the <see cref="Current"/> image.
+		/// The list of shapes which compose the <see cref="Current"/> image.
 		/// </summary>
 		public Queue<T> Shapes { get; } = [];
 
@@ -39,7 +39,7 @@ namespace Primitive
 		/// <param name="size"></param>
 		public Image Process(Size size)
 		{
-			return null;
+			return Current;
 		}
 	}
 }

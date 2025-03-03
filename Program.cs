@@ -1,12 +1,17 @@
 ﻿using Primitive;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using System.ComponentModel;
+using System.Diagnostics;
+using Color = SixLabors.ImageSharp.Color;
 using Size = SixLabors.ImageSharp.Size;
 
-return new CommandApp<RootCommand>().Run(args);
+var app = new CommandApp<RootCommand>();
+app.Configure(c => c.SetExceptionHandler((ex, _) => AnsiConsole.WriteException(ex)));
+return app.Run(args);
 
 internal sealed class RootCommand : Command<RootCommand.Settings>
 {
@@ -45,25 +50,32 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 		[CommandOption("--output-size")]
 		[DefaultValue(1024)]
 		public int OutputSize { get; set; }
+
+		[Description("Attaches a debugger to the process")]
+		[CommandOption("--debug")]
+		[DefaultValue(false)]
+		public bool Debug { get; set; }
 	}
 
 	public override int Execute(CommandContext context, Settings settings)
 	{
-		AnsiConsole.MarkupLine($"Input: [blue]{settings.Input}[/]");
-		AnsiConsole.MarkupLine($"Output: [blue]{settings.Output}[/]");
-		AnsiConsole.MarkupLine($"Shape: [blue]{settings.Shape}[/]");
-		AnsiConsole.MarkupLine($"Iterations: [blue]{settings.Iterations}[/]");
+		if (settings.Debug) Debugger.Launch();
 
 		var inputSize = new Size(settings.InputSize, settings.InputSize);
 		var outputSize = new Size(settings.OutputSize, settings.OutputSize);
 
-		using var input = Image.Load(settings.Input);
-		// How to resize relative to center of image?
-		input.Mutate(x => x.Resize(inputSize));
+		using var input = Image.Load<Rgba32>(settings.Input);
+		input.Mutate(x => x.Resize(new ResizeOptions { Size = inputSize }));
 
-		var model = new Model<IShape>(input);
+		var background = settings.Background is not null
+			? Color.Parse(settings.Background)
+			: Helper.AverageColor(input);
+
+		AnsiConsole.MarkupLine($"Background color: [blue]{background.ToHex()}[/]");
+
+		var model = new Model<IShape>(input, background);
 		for (var i = 0; i < settings.Iterations; i++) model.Add();
-		var output = model.Process(outputSize);
+		using var output = model.Process(outputSize);
 
 		output.Save(settings.Output);
 		return 0;
