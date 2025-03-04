@@ -3,7 +3,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace Primitive
 {
-	internal class Model<T>(Image<Rgba32> target, Color background) where T : IShape
+	internal class Model<T>(Image<Rgba32> target, Color background) where T : Shape
 	{
 		/// <summary>
 		/// The thumbnail image corresponding to the model's goal.
@@ -30,7 +30,8 @@ namespace Primitive
 		/// </summary>
 		public void Add()
 		{
-
+			// Trial many starting shapes and pick best
+			// Hill climb until threshold reached
 		}
 
 		/// <summary>

@@ -70,8 +70,7 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 			? Color.Parse(settings.Background)
 			: Helper.AverageColor(input);
 
-		// TODO: Implement shapes
-		var model = new Model<IShape>(input, background);
+		var model = new Model<Shape>(input, background);
 		for (var i = 0; i < settings.Iterations; i++) model.Add();
 
 		using var output = model.Export(settings.OutputSize);
