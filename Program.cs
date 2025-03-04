@@ -7,7 +7,6 @@ using Spectre.Console.Cli;
 using System.ComponentModel;
 using System.Diagnostics;
 using Color = SixLabors.ImageSharp.Color;
-using Size = SixLabors.ImageSharp.Size;
 
 var app = new CommandApp<RootCommand>();
 app.Configure(c => c.SetExceptionHandler((ex, _) => AnsiConsole.WriteException(ex)));
@@ -18,12 +17,12 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 	public class Settings : CommandSettings
 	{
 		[Description("Path to input image")]
-		[CommandArgument(0, "<Input>")]
-		public required string Input { get; set; }
+		[CommandArgument(0, "<InputPath>")]
+		public required string InputPath { get; set; }
 
 		[Description("Path to output image")]
-		[CommandArgument(1, "<Output>")]
-		public required string Output { get; set; }
+		[CommandArgument(1, "<OutputPath>")]
+		public required string OutputPath { get; set; }
 
 		[Description("Type of shape")]
 		[CommandArgument(2, "<Shape>")]
@@ -33,7 +32,7 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 		[CommandArgument(3, "<Iterations>")]
 		public required int Iterations { get; set; }
 
-		[Description("Background color hex code; averaged if unspecified")]
+		[Description("Background color hex code; auto-detected if unspecified")]
 		[CommandOption("--background")]
 		public string? Background { get; set; }
 
@@ -51,7 +50,7 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 		[DefaultValue(1024)]
 		public int OutputSize { get; set; }
 
-		[Description("Attaches a debugger to the process")]
+		[Description("Attaches debugger to process")]
 		[CommandOption("--debug")]
 		[DefaultValue(false)]
 		public bool Debug { get; set; }
@@ -61,23 +60,23 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 	{
 		if (settings.Debug) Debugger.Launch();
 
-		var inputSize = new Size(settings.InputSize, settings.InputSize);
-		var outputSize = new Size(settings.OutputSize, settings.OutputSize);
-
-		using var input = Image.Load<Rgba32>(settings.Input);
-		input.Mutate(x => x.Resize(new ResizeOptions { Size = inputSize }));
+		using var input = Image.Load<Rgba32>(settings.InputPath);
+		input.Mutate(x => x.Resize(new ResizeOptions
+		{
+			Size = new(settings.InputSize, settings.InputSize)
+		}));
 
 		var background = settings.Background is not null
 			? Color.Parse(settings.Background)
 			: Helper.AverageColor(input);
 
-		AnsiConsole.MarkupLine($"Background color: [blue]{background.ToHex()}[/]");
-
+		// TODO: Implement shapes
 		var model = new Model<IShape>(input, background);
 		for (var i = 0; i < settings.Iterations; i++) model.Add();
-		using var output = model.Process(outputSize);
 
-		output.Save(settings.Output);
+		using var output = model.Export(settings.OutputSize);
+		output.Save(settings.OutputPath);
+
 		return 0;
 	}
 }

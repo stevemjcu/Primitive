@@ -13,15 +13,13 @@ namespace Primitive
 		/// <returns>The average <see cref="Color"/>.</returns>
 		public static Color AverageColor(Image<Rgba32> image)
 		{
-			var sum = new Vector4();
-
+			var sum = Vector4.Zero;
 			image.ProcessPixelRows(rows =>
 			{
 				for (var i = 0; i < rows.Height; i++)
 					foreach (var p in rows.GetRowSpan(i))
 						sum += p.ToVector4();
 			});
-
 			return new Color(sum / (image.Height * image.Width));
 		}
 
@@ -30,7 +28,7 @@ namespace Primitive
 		/// </summary>
 		/// <param name="source">The model <see cref="Image{Rgba32}"/>.</param>
 		/// <param name="target">The ideal <see cref="Image{Rgba32}"/>.</param>
-		/// <returns>The root mean squared error.</returns>
+		/// <returns>The average difference between corresponding color channels.</returns>
 		public static int RMSE(Image<Rgba32> source, Image<Rgba32> target)
 		{
 			return default;
