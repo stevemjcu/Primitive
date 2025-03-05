@@ -1,4 +1,5 @@
 ﻿using Primitive;
+using Primitive.Shapes;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -31,6 +32,16 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 		[Description("Number of shapes")]
 		[CommandArgument(3, "<Iterations>")]
 		public required int Iterations { get; set; }
+
+		[Description("Number of starting shapes per iteration")]
+		[CommandOption("--trials")]
+		[DefaultValue(100)]
+		public int Trials { get; set; }
+
+		[Description("Number of consecutive failures until iteration ends")]
+		[CommandOption("--trials")]
+		[DefaultValue(100)]
+		public int Limit { get; set; }
 
 		[Description("Background color hex code; auto-detected if unspecified")]
 		[CommandOption("--background")]
@@ -70,8 +81,9 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 			? Color.Parse(settings.Background)
 			: Helper.AverageColor(input);
 
-		var model = new Model<Shape>(input, background);
-		for (var i = 0; i < settings.Iterations; i++) model.Add();
+		var model = new Model(input, background);
+		for (var i = 0; i < settings.Iterations; i++)
+			model.Add<Ellipse>(settings.Trials, settings.Limit);
 
 		using var output = model.Export(settings.OutputSize);
 		output.Save(settings.OutputPath);

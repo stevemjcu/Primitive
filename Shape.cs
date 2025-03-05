@@ -10,9 +10,11 @@ namespace Primitive
 
 		public Vector2 Size { get; set; }
 
-		public float Rotation { get; set; }
+		//public float Rotation { get; set; }
 
 		public Rgba32 Color { get; set; }
+
+		public Shape Clone() => (Shape)MemberwiseClone();
 
 		public abstract void Draw(Image<Rgba32> image);
 	}

@@ -26,7 +26,7 @@ namespace Primitive
 
 		/// <summary>
 		/// Calculates the root mean squared error between an <see cref="Image{Rgba32}"/> and its target.
-		/// Assumes images are the same dimensions.
+		/// Assumes images have the same dimensions.
 		/// </summary>
 		/// <param name="source">The model <see cref="Image{Rgba32}"/>.</param>
 		/// <param name="target">The ideal <see cref="Image{Rgba32}"/>.</param>
@@ -49,6 +49,47 @@ namespace Primitive
 				}
 			});
 			return (int)Math.Sqrt((sum.W + sum.X + sum.Y + sum.Z) / channels);
+		}
+
+		/// <inheritdoc cref="NextVector2(Random, int, int)"/>
+		public static Vector2 NextVector2(this Random rand, int max = int.MaxValue)
+			=> rand.NextVector2(0, max);
+
+		/// <summary>
+		/// ...
+		/// </summary>
+		/// <param name="rand"></param>
+		/// <param name="max"></param>
+		/// <returns></returns>
+		public static Vector2 NextVector2(this Random rand, int min, int max)
+		{
+			return new()
+			{
+				X = rand.Next(min, max),
+				Y = rand.Next(min, max)
+			};
+		}
+
+		/// <inheritdoc cref="NextVector4(Random, int, int)"/>
+		public static Vector4 NextVector4(this Random rand, int max = int.MaxValue)
+			=> rand.NextVector4(0, max);
+
+		/// <summary>
+		/// ...
+		/// </summary>
+		/// <param name="rand"></param>
+		/// <param name="min"></param>
+		/// <param name="max"></param>
+		/// <returns></returns>
+		public static Vector4 NextVector4(this Random rand, int min, int max)
+		{
+			return new()
+			{
+				W = rand.Next(min, max),
+				X = rand.Next(min, max),
+				Y = rand.Next(min, max),
+				Z = rand.Next(min, max)
+			};
 		}
 	}
 }
