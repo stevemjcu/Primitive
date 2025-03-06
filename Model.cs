@@ -13,75 +13,55 @@ namespace Primitive
 		/// <summary>
 		/// The thumbnail image corresponding to the model's canvas.
 		/// </summary>
-		public Image<Rgba32> Current { get; } = new Image<Rgba32>(target.Width, target.Height, background);
+		public Image<Rgba32> Current { get; } = new(target.Width, target.Height, background);
 
 		/// <summary>
 		/// The list of shapes which compose the <see cref="Current"/> image.
 		/// </summary>
 		public Queue<Shape> Shapes { get; } = [];
 
-		private Random Rand { get; } = new Random();
-
-		private int Length { get; } = target.Width;
-
 		/// <summary>
 		/// Adds a random <see cref="{T}"/> shape to the <see cref="Current"/> image using a hill climbing algorithm.
 		/// </summary>
 		public void AddShape<T>(int trials, int limit) where T : Shape, new()
+			=> OptimizeShape<T>(TrialShapes<T>(trials), limit);
+
+		private Shape TrialShapes<T>(int trials) where T : Shape, new()
 		{
 			var shape = new T();
-			var error = int.MaxValue;
-
-			// Trial series of shapes and pick best
 			for (var i = 0; i < trials; i++)
 			{
 				var c = Current.Clone();
-				var s = new T()
-				{
-					Position = Rand.NextVector2(Length),
-					Size = Rand.NextVector2(Length / 16, Length / 4),
-					Color = Color.Black, // TODO: Pick color
-				};
+				var s = new T();
 
-				// Should we sample color from a region e.g., average or median or random?
-				// Or should we precalculate and unroll a color palette to choose from?
-				// Or is it only feasible to recalculate color before every draw call?
-
+				s.Randomize();
 				s.Draw(c);
-				var e = Helper.RMSE(c, Target);
-				if (e < error)
-					(shape, error) = (s, e);
-			}
 
-			// Optimize shape until it ages out
+				s.Error = Helper.RMSE(c, Target);
+				if (s.Error < shape.Error)
+					shape = s;
+			}
+			return shape;
+		}
+
+		private void OptimizeShape<T>(Shape shape, int limit) where T : Shape, new()
+		{
 			for (var i = 0; i < limit; i++)
 			{
 				var c = Current.Clone();
 				var s = (T)shape.Clone();
 
-				switch (Rand.Next(3))
-				{
-					case 0:
-						// TODO: Mutate position
-						break;
-					case 1:
-						// TODO: Mutate size
-						break;
-					case 2:
-						// TODO: Mutate color
-						break;
-				}
-
+				s.Mutate();
 				s.Draw(c);
-				var e = Helper.RMSE(c, Target);
-				if (e < error)
-					(shape, error, i) = (s, e, 0);
+
+				s.Error = Helper.RMSE(c, Target);
+				if (s.Error < shape.Error)
+					(shape, i) = (s, 0);
 			}
 		}
 
 		/// <summary>
-		/// Redraws the <see cref="Current"/> image at the given resolution.
-		/// Also enables anti-aliasing.
+		/// Redraws the <see cref="Current"/> image using the <see cref="Shapes"/> queue at the given resolution.
 		/// </summary>
 		public Image<Rgba32> Export(int length)
 		{

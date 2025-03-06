@@ -51,44 +51,23 @@ namespace Primitive
 			return (int)Math.Sqrt((sum.W + sum.X + sum.Y + sum.Z) / channels);
 		}
 
-		/// <inheritdoc cref="NextVector2(Random, int, int)"/>
-		public static Vector2 NextVector2(this Random rand, int max = int.MaxValue)
-			=> rand.NextVector2(0, max);
-
-		/// <summary>
-		/// ...
-		/// </summary>
-		/// <param name="rand"></param>
-		/// <param name="max"></param>
-		/// <returns></returns>
-		public static Vector2 NextVector2(this Random rand, int min, int max)
+		public static Vector2 NextVector2(this Random random)
 		{
 			return new()
 			{
-				X = rand.Next(min, max),
-				Y = rand.Next(min, max)
+				X = random.NextSingle(),
+				Y = random.NextSingle()
 			};
 		}
 
-		/// <inheritdoc cref="NextVector4(Random, int, int)"/>
-		public static Vector4 NextVector4(this Random rand, int max = int.MaxValue)
-			=> rand.NextVector4(0, max);
-
-		/// <summary>
-		/// ...
-		/// </summary>
-		/// <param name="rand"></param>
-		/// <param name="min"></param>
-		/// <param name="max"></param>
-		/// <returns></returns>
-		public static Vector4 NextVector4(this Random rand, int min, int max)
+		public static Vector4 NextVector4(this Random random)
 		{
 			return new()
 			{
-				W = rand.Next(min, max),
-				X = rand.Next(min, max),
-				Y = rand.Next(min, max),
-				Z = rand.Next(min, max)
+				W = random.NextSingle(),
+				X = random.NextSingle(),
+				Y = random.NextSingle(),
+				Z = random.NextSingle()
 			};
 		}
 	}
