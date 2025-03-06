@@ -35,12 +35,12 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 
 		[Description("Number of starting shapes per iteration")]
 		[CommandOption("--trials")]
-		[DefaultValue(100)]
+		[DefaultValue(200)]
 		public int Trials { get; set; }
 
-		[Description("Number of consecutive failures until iteration ends")]
-		[CommandOption("--trials")]
-		[DefaultValue(100)]
+		[Description("Number of allowed consecutive failures per iteration")]
+		[CommandOption("--limit")]
+		[DefaultValue(30)]
 		public int Limit { get; set; }
 
 		[Description("Background color hex code; auto-detected if unspecified")]
@@ -82,12 +82,18 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 			: Helper.AverageColor(input);
 
 		var model = new Model(input, background);
-		for (var i = 0; i < settings.Iterations; i++)
-			model.Add<Ellipse>(settings.Trials, settings.Limit);
+		AnsiConsole.Progress().Start(ctx =>
+		{
+			var task = ctx.AddTask("[green]Adding shapes[/]", maxValue: settings.Iterations);
+			while (!ctx.IsFinished)
+			{
+				model.AddShape<Ellipse>(settings.Trials, settings.Limit);
+				task.Increment(1);
+			}
+		});
 
 		using var output = model.Export(settings.OutputSize);
 		output.Save(settings.OutputPath);
-
 		return 0;
 	}
 }

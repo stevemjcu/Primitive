@@ -27,7 +27,7 @@ namespace Primitive
 		/// <summary>
 		/// Adds a random <see cref="{T}"/> shape to the <see cref="Current"/> image using a hill climbing algorithm.
 		/// </summary>
-		public void Add<T>(int trials, int limit) where T : Shape, new()
+		public void AddShape<T>(int trials, int limit) where T : Shape, new()
 		{
 			var shape = new T();
 			var error = int.MaxValue;
