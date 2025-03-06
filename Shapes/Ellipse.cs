@@ -3,14 +3,11 @@ using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using System.Numerics;
 
 namespace Primitive.Shapes
 {
 	class Ellipse : Shape
 	{
-		public Vector2 Size { get; set; }
-
 		public override void Randomize()
 		{
 			throw new NotImplementedException();
@@ -21,7 +18,7 @@ namespace Primitive.Shapes
 			throw new NotImplementedException();
 		}
 
-		public override Rgba32 Sample(Image<Rgba32> image)
+		public override void Sample(Image<Rgba32> image)
 		{
 			throw new NotImplementedException();
 		}

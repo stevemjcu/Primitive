@@ -41,6 +41,7 @@ namespace Primitive
 				var s = new T();
 
 				s.Randomize();
+				s.Sample(Target);
 				s.Draw(c);
 
 				s.Error = Helper.RMSE(c, Target);
@@ -72,6 +73,7 @@ namespace Primitive
 		/// </summary>
 		public Image<Rgba32> Export(int length)
 		{
+			// TODO: Enable options like anti-aliasing
 			var image = new Image<Rgba32>(length, length, _background);
 			foreach (var s in Shapes) s.Draw(image);
 			return image;
