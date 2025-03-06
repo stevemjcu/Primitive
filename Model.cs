@@ -20,11 +20,17 @@ namespace Primitive
 		/// </summary>
 		public Queue<Shape> Shapes { get; } = [];
 
+		private readonly Color _background = background;
+
 		/// <summary>
 		/// Adds a random <see cref="{T}"/> shape to the <see cref="Current"/> image using a hill climbing algorithm.
 		/// </summary>
 		public void AddShape<T>(int trials, int limit) where T : Shape, new()
-			=> OptimizeShape<T>(TrialShapes<T>(trials), limit);
+		{
+			var s = OptimizeShape<T>(TrialShapes<T>(trials), limit);
+			Shapes.Enqueue(s);
+			s.Draw(Current);
+		}
 
 		private Shape TrialShapes<T>(int trials) where T : Shape, new()
 		{
@@ -44,7 +50,7 @@ namespace Primitive
 			return shape;
 		}
 
-		private void OptimizeShape<T>(Shape shape, int limit) where T : Shape, new()
+		private Shape OptimizeShape<T>(Shape shape, int limit) where T : Shape, new()
 		{
 			for (var i = 0; i < limit; i++)
 			{
@@ -58,6 +64,7 @@ namespace Primitive
 				if (s.Error < shape.Error)
 					(shape, i) = (s, 0);
 			}
+			return shape;
 		}
 
 		/// <summary>
@@ -65,7 +72,9 @@ namespace Primitive
 		/// </summary>
 		public Image<Rgba32> Export(int length)
 		{
-			return Current;
+			var image = new Image<Rgba32>(length, length, _background);
+			foreach (var s in Shapes) s.Draw(image);
+			return image;
 		}
 	}
 }

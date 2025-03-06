@@ -47,10 +47,6 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 		[CommandOption("--background")]
 		public string? Background { get; set; }
 
-		[Description("Alpha value of each shape; optimized for if unspecified")]
-		[CommandOption("--alpha")]
-		public int? Alpha { get; set; }
-
 		[Description("Dimension to resize input image to")]
 		[CommandOption("--input-size")]
 		[DefaultValue(256)]
