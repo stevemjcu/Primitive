@@ -8,6 +8,11 @@ namespace Primitive.Shapes
 {
 	class Ellipse : Shape
 	{
+		public override Shape New()
+		{
+			throw new NotImplementedException();
+		}
+
 		public override void Randomize()
 		{
 			throw new NotImplementedException();

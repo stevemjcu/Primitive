@@ -14,6 +14,8 @@ namespace Primitive
 
 		public int Error { get; set; } = int.MaxValue;
 
+		public abstract Shape New();
+
 		public Shape Clone() => (Shape)MemberwiseClone();
 
 		public abstract void Randomize();

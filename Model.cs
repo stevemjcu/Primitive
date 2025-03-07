@@ -23,22 +23,21 @@ namespace Primitive
 		private readonly Color _background = background;
 
 		/// <summary>
-		/// Adds a random <see cref="{T}"/> shape to the <see cref="Current"/> image using a hill climbing algorithm.
+		/// Adds the <see cref="Shape"/> to the <see cref="Current"/> image using a hill climbing algorithm.
 		/// </summary>
-		public void AddShape<T>(int trials, int limit) where T : Shape, new()
+		public void Add(Shape shape, int trials, int limit)
 		{
-			var s = OptimizeShape<T>(TrialShapes<T>(trials), limit);
+			var s = Optimize(Trial(shape, trials), limit);
 			Shapes.Enqueue(s);
 			s.Draw(Current);
 		}
 
-		private Shape TrialShapes<T>(int trials) where T : Shape, new()
+		private Shape Trial(Shape shape, int trials)
 		{
-			var shape = new T();
 			for (var i = 0; i < trials; i++)
 			{
 				var c = Current.Clone();
-				var s = new T();
+				var s = shape.New();
 
 				s.Randomize();
 				s.Sample(Target);
@@ -51,12 +50,12 @@ namespace Primitive
 			return shape;
 		}
 
-		private Shape OptimizeShape<T>(Shape shape, int limit) where T : Shape, new()
+		private Shape Optimize(Shape shape, int limit)
 		{
 			for (var i = 0; i < limit; i++)
 			{
 				var c = Current.Clone();
-				var s = (T)shape.Clone();
+				var s = shape.Clone();
 
 				s.Mutate();
 				s.Draw(c);

@@ -78,12 +78,18 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 			: Helper.AverageColor(input);
 
 		var model = new Model(input, background);
+		var shape = settings.Shape switch
+		{
+			"Ellipse" => (Shape)new Ellipse(),
+			_ => throw new Exception("Invalid shape")
+		};
+
 		AnsiConsole.Progress().Start(ctx =>
 		{
-			var task = ctx.AddTask("[green]Adding shapes[/]", maxValue: settings.Iterations);
+			var task = ctx.AddTask("[green]Adding shapes[/]", true, settings.Iterations);
 			while (!ctx.IsFinished)
 			{
-				model.AddShape<Ellipse>(settings.Trials, settings.Limit);
+				model.Add(shape, settings.Trials, settings.Limit);
 				task.Increment(1);
 			}
 		});
