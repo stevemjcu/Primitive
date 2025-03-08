@@ -6,7 +6,6 @@ using SixLabors.ImageSharp.Processing;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using System.ComponentModel;
-using System.Diagnostics;
 using Color = SixLabors.ImageSharp.Color;
 
 var app = new CommandApp<RootCommand>();
@@ -56,17 +55,10 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 		[CommandOption("--output-size")]
 		[DefaultValue(1024)]
 		public int OutputSize { get; set; }
-
-		[Description("Attaches debugger to process")]
-		[CommandOption("--debug")]
-		[DefaultValue(false)]
-		public bool Debug { get; set; }
 	}
 
 	public override int Execute(CommandContext context, Settings settings)
 	{
-		if (settings.Debug) Debugger.Launch();
-
 		using var input = Image.Load<Rgba32>(settings.InputPath);
 		input.Mutate(x => x.Resize(new ResizeOptions
 		{
@@ -84,12 +76,13 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 			_ => throw new Exception("Invalid shape")
 		};
 
+		// Run model with progress bar
 		AnsiConsole.Progress().Start(ctx =>
 		{
 			var task = ctx.AddTask("[green]Adding shapes[/]", true, settings.Iterations);
 			while (!ctx.IsFinished)
 			{
-				model.Add(shape, settings.Trials, settings.Limit);
+				model.Add(shape.New(), settings.Trials, settings.Limit);
 				task.Increment(1);
 			}
 		});

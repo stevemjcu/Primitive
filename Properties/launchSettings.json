@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Primitive": {
+      "commandName": "Project",
+      "commandLineArgs": "\"..\\..\\..\\Samples\\MonaLisa.png\"\r\n\"..\\..\\..\\Samples\\Output.png\"\r\nEllipse\r\n20"
+    }
+  }
+}
