@@ -39,11 +39,10 @@ namespace Primitive
 				var c = Current.Clone();
 				var s = shape.New();
 
-				s.Randomize();
 				s.Sample(Target);
 				s.Draw(c);
+				s.Score(c, Target);
 
-				s.Error = Helper.RMSE(c, Target);
 				if (s.Error < shape.Error)
 					shape = s;
 			}
@@ -59,8 +58,8 @@ namespace Primitive
 
 				s.Mutate();
 				s.Draw(c);
+				s.Score(c, Target);
 
-				s.Error = Helper.RMSE(c, Target);
 				if (s.Error < shape.Error)
 					(shape, i) = (s, 0);
 			}
@@ -70,10 +69,10 @@ namespace Primitive
 		/// <summary>
 		/// Redraws the <see cref="Current"/> image using the <see cref="Shapes"/> queue at the given resolution.
 		/// </summary>
-		public Image<Rgba32> Export(int length)
+		public Image<Rgba32> Export(int size)
 		{
-			// TODO: Enable options like anti-aliasing
-			var image = new Image<Rgba32>(length, length, _background);
+			// TODO: Investigate options like anti-aliasing
+			var image = new Image<Rgba32>(size, size, _background);
 			foreach (var s in Shapes) s.Draw(image);
 			return image;
 		}

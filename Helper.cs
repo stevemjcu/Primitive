@@ -28,14 +28,14 @@ namespace Primitive
 		/// Calculates the root mean squared error between an <see cref="Image{Rgba32}"/> and its target.
 		/// Assumes images have the same dimensions.
 		/// </summary>
-		/// <param name="source">The model <see cref="Image{Rgba32}"/>.</param>
+		/// <param name="current">The model <see cref="Image{Rgba32}"/>.</param>
 		/// <param name="target">The ideal <see cref="Image{Rgba32}"/>.</param>
 		/// <returns>The average distance between corresponding color channels.</returns>
-		public static int RMSE(Image<Rgba32> source, Image<Rgba32> target)
+		public static int Rmse(Image<Rgba32> current, Image<Rgba32> target)
 		{
 			var sum = Vector4.Zero;
-			var channels = source.Height * source.Width * 4;
-			source.ProcessPixelRows(target, (rows1, rows2) =>
+			var channels = current.Height * current.Width * 4;
+			current.ProcessPixelRows(target, (rows1, rows2) =>
 			{
 				for (var i = 0; i < rows1.Height; i++)
 				{
@@ -51,24 +51,47 @@ namespace Primitive
 			return (int)Math.Sqrt((sum.W + sum.X + sum.Y + sum.Z) / channels);
 		}
 
-		public static Vector2 NextVector2(this Random random)
+		public static Vector2 NextVector2(this Random rand)
 		{
 			return new()
 			{
-				X = random.NextSingle(),
-				Y = random.NextSingle()
+				X = rand.NextSingle(),
+				Y = rand.NextSingle()
 			};
 		}
 
-		public static Vector4 NextVector4(this Random random)
+		public static Vector4 NextVector4(this Random rand)
 		{
 			return new()
 			{
-				W = random.NextSingle(),
-				X = random.NextSingle(),
-				Y = random.NextSingle(),
-				Z = random.NextSingle()
+				W = rand.NextSingle(),
+				X = rand.NextSingle(),
+				Y = rand.NextSingle(),
+				Z = rand.NextSingle()
 			};
 		}
+
+		public static Vector2 Clamp(Vector2 val, float min, float max)
+		{
+			return new()
+			{
+				X = Math.Clamp(val.X, min, max),
+				Y = Math.Clamp(val.Y, min, max)
+			};
+		}
+
+		public static Vector4 Clamp(Vector4 val, float min, float max)
+		{
+			return new()
+			{
+				W = Math.Clamp(val.W, min, max),
+				X = Math.Clamp(val.X, min, max),
+				Y = Math.Clamp(val.Y, min, max),
+				Z = Math.Clamp(val.Z, min, max),
+			};
+		}
+
+		public static int NextSign(this Random rand)
+			=> rand.Next(2) == 0 ? 1 : -1;
 	}
 }
