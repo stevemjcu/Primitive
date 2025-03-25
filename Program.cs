@@ -87,7 +87,7 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 			}
 		});
 
-		using var output = model.Export(settings.OutputSize);
+		using var output = model.Export(settings.OutputSize, background);
 		output.Save(settings.OutputPath);
 		return 0;
 	}

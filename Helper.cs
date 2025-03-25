@@ -11,31 +11,42 @@ namespace Primitive
 		/// </summary>
 		/// <param name="image">The target <see cref="Image{Rgba32}"/>.</param>
 		/// <returns>The average <see cref="Color"/>.</returns>
-		public static Color AverageColor(Image<Rgba32> image)
+		public static Color AverageColor(Image<Rgba32> image, Rectangle? area = null)
 		{
+			var rect = area ?? image.Bounds;
+			var i1 = Math.Max(0, rect.Top);
+			var i2 = Math.Min(image.Height, rect.Bottom);
+			var j1 = Math.Max(0, rect.Left);
+			var j2 = Math.Min(image.Width, rect.Right);
+
 			var sum = Vector4.Zero;
-			var pixels = image.Height * image.Width;
+			var pixels = (i2 - i1) * (j2 - j1);
 			image.ProcessPixelRows(rows =>
 			{
-				for (var i = 0; i < rows.Height; i++)
-					foreach (var p in rows.GetRowSpan(i))
-						sum += p.ToVector4();
+				for (var i = i1; i < i2; i++)
+				{
+					var row = rows.GetRowSpan(i);
+					for (var j = j1; j < j2; j++)
+					{
+						sum += row[j].ToVector4();
+					}
+				}
 			});
 			return new Color(sum / pixels);
 		}
 
 		/// <summary>
-		/// Calculates the root mean squared error between an <see cref="Image{Rgba32}"/> and its target.
-		/// Assumes images have the same dimensions.
+		/// Calculates the root mean squared error between the source <see cref="Image{Rgba32}"/> and its target.
 		/// </summary>
-		/// <param name="current">The model <see cref="Image{Rgba32}"/>.</param>
+		/// <param name="source">The model <see cref="Image{Rgba32}"/>.</param>
 		/// <param name="target">The ideal <see cref="Image{Rgba32}"/>.</param>
-		/// <returns>The average distance between corresponding color channels.</returns>
-		public static int Rmse(Image<Rgba32> current, Image<Rgba32> target)
+		/// <returns>The average distance between corresponding color channels</returns>
+		/// <remarks>Assumes images have the same dimensions</remarks>
+		public static float Rmse(Image<Rgba32> source, Image<Rgba32> target)
 		{
 			var sum = Vector4.Zero;
-			var channels = current.Height * current.Width * 4;
-			current.ProcessPixelRows(target, (rows1, rows2) =>
+			var channels = source.Height * source.Width * 4;
+			source.ProcessPixelRows(target, (rows1, rows2) =>
 			{
 				for (var i = 0; i < rows1.Height; i++)
 				{
@@ -48,7 +59,7 @@ namespace Primitive
 					}
 				}
 			});
-			return (int)Math.Sqrt((sum.W + sum.X + sum.Y + sum.Z) / channels);
+			return (float)Math.Sqrt((sum.W + sum.X + sum.Y + sum.Z) / channels);
 		}
 
 		public static Vector2 NextVector2(this Random rand)
@@ -60,6 +71,15 @@ namespace Primitive
 			};
 		}
 
+		public static Vector2 NextSignedVector2(this Random rand)
+		{
+			return new()
+			{
+				X = rand.NextSingle() * rand.NextSign(),
+				Y = rand.NextSingle() * rand.NextSign()
+			};
+		}
+
 		public static Vector4 NextVector4(this Random rand)
 		{
 			return new()
@@ -68,6 +88,17 @@ namespace Primitive
 				X = rand.NextSingle(),
 				Y = rand.NextSingle(),
 				Z = rand.NextSingle()
+			};
+		}
+
+		public static Vector4 NextSignedVector4(this Random rand)
+		{
+			return new()
+			{
+				W = rand.NextSingle() * rand.NextSign(),
+				X = rand.NextSingle() * rand.NextSign(),
+				Y = rand.NextSingle() * rand.NextSign(),
+				Z = rand.NextSingle() * rand.NextSign()
 			};
 		}
 

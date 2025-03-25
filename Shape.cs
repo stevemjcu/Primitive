@@ -6,8 +6,8 @@ namespace Primitive
 {
 	/// <summary>
 	/// A class that represents a mutable shape on a bounded plane.
-	/// Each axis is constrained to [0.0, 1.0).
 	/// </summary>
+	/// <remarks>Each axis should be constrained to [0.0, 1.0)</remarks>
 	internal abstract class Shape
 	{
 		public Vector2 Position { get; protected set; }
@@ -16,7 +16,7 @@ namespace Primitive
 
 		public Vector4 Color { get; protected set; }
 
-		public int Error { get; protected set; } = int.MaxValue;
+		public float Error { get; set; } = int.MaxValue;
 
 		/// <summary>
 		/// Creates a random <see cref="Shape"/> of the same type.
@@ -31,7 +31,7 @@ namespace Primitive
 		public Shape Clone() => (Shape)MemberwiseClone();
 
 		/// <summary>
-		/// Randomly modifies the properties of the current <see cref="Shape"/>.
+		/// Randomly modifies one property of the current <see cref="Shape"/>.
 		/// </summary>
 		public abstract void Mutate();
 
@@ -46,12 +46,5 @@ namespace Primitive
 		/// </summary>
 		/// <param name="image">The <see cref="Image{Rgba32}"/> to draw on</param>
 		public abstract void Draw(Image<Rgba32> image);
-
-		/// <summary>
-		/// Evaluates the <see cref="Error"/> property by calculating the local error between the two images.
-		/// </summary>
-		/// <param name="current">The current <see cref="Image{Rgba32}"/></param>
-		/// <param name="target">The target <see cref="Image{Rgba32}"/></param>
-		public abstract void Score(Image<Rgba32> current, Image<Rgba32> target);
 	}
 }
