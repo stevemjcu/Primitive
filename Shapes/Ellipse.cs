@@ -7,31 +7,31 @@ using System.Numerics;
 
 namespace Primitive.Shapes
 {
-	class Ellipse : Shape
+	internal class Ellipse : Shape
 	{
-		private static readonly Random _rand = new();
+		private static Random Rand { get; } = new();
 
 		public override Shape New()
 		{
 			return new Ellipse()
 			{
-				Position = _rand.NextVector2(),
-				Size = _rand.NextVector2() + new Vector2(.02f)
+				Position = Rand.NextVector2(),
+				Size = Rand.NextVector2() + new Vector2(.02f)
 			};
 		}
 
 		public override void Mutate()
 		{
-			switch (_rand.Next(3))
+			switch (Rand.Next(3))
 			{
 				case 0:
-					Position = Helper.Clamp(Position + _rand.NextSignedVector2() / 16, 0, 1);
+					Position = Helper.Clamp(Position + Rand.NextVector2Signed() / 16, 0, 1);
 					break;
 				case 1:
-					Size = Helper.Clamp(Size + _rand.NextSignedVector2() / 16, .02f, 1);
+					Size = Helper.Clamp(Size + Rand.NextVector2Signed() / 16, .02f, 1);
 					break;
 				case 2:
-					Color = Helper.Clamp(Color + _rand.NextSignedVector4() / 16, 0, 1);
+					Color = Helper.Clamp(Color + Rand.NextVector4Signed() / 16, 0, 1);
 					break;
 			}
 		}

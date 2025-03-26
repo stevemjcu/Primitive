@@ -76,7 +76,6 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 			_ => throw new Exception("Invalid shape")
 		};
 
-		// Run model with progress bar
 		AnsiConsole.Progress().Start(ctx =>
 		{
 			var task = ctx.AddTask("[green]Adding shapes[/]", true, settings.Iterations);
@@ -87,7 +86,7 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 			}
 		});
 
-		using var output = model.Export(settings.OutputSize, background);
+		using var output = model.Export(settings.OutputSize);
 		output.Save(settings.OutputPath);
 		return 0;
 	}

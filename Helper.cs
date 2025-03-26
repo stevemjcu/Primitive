@@ -6,24 +6,26 @@ namespace Primitive
 {
 	internal static class Helper
 	{
+		#region Image
+
 		public static Color AverageColor(Image<Rgba32> image, Rectangle? area = null)
 		{
 			var rect = area ?? image.Bounds;
 
-			var i1 = Math.Max(0, rect.Top);
-			var i2 = Math.Min(image.Height, rect.Bottom);
-			var j1 = Math.Max(0, rect.Left);
-			var j2 = Math.Min(image.Width, rect.Right);
+			var a = Math.Max(0, rect.Top);
+			var b = Math.Min(image.Height, rect.Bottom);
+			var c = Math.Max(0, rect.Left);
+			var d = Math.Min(image.Width, rect.Right);
 
 			var sum = Vector4.Zero;
-			var pixels = (i2 - i1) * (j2 - j1);
+			var pixels = (b - a) * (d - c);
 
 			image.ProcessPixelRows(rows =>
 			{
-				for (var i = i1; i < i2; i++)
+				for (var i = a; i < b; i++)
 				{
 					var row = rows.GetRowSpan(i);
-					for (var j = j1; j < j2; j++)
+					for (var j = c; j < d; j++)
 					{
 						sum += row[j].ToVector4();
 					}
@@ -52,70 +54,71 @@ namespace Primitive
 				}
 			});
 
-			return (float)Math.Sqrt((sum.W + sum.X + sum.Y + sum.Z) / channels);
+			return (float)Math.Sqrt(
+				(sum.W + sum.X + sum.Y + sum.Z) / channels);
 		}
+
+		#endregion
+
+		#region Vector
 
 		public static Vector2 NextVector2(this Random rand)
 		{
-			return new()
-			{
-				X = rand.NextSingle(),
-				Y = rand.NextSingle()
-			};
+			return new(
+				rand.NextSingle(),
+				rand.NextSingle()
+			);
 		}
 
-		public static Vector2 NextSignedVector2(this Random rand)
+		public static Vector2 NextVector2Signed(this Random rand)
 		{
-			return new()
-			{
-				X = rand.NextSingle() * rand.NextSign(),
-				Y = rand.NextSingle() * rand.NextSign()
-			};
+			return new(
+				rand.NextSingle() * rand.NextSign(),
+				rand.NextSingle() * rand.NextSign()
+			);
 		}
 
 		public static Vector4 NextVector4(this Random rand)
 		{
-			return new()
-			{
-				W = rand.NextSingle(),
-				X = rand.NextSingle(),
-				Y = rand.NextSingle(),
-				Z = rand.NextSingle()
-			};
+			return new(
+				rand.NextSingle(),
+				rand.NextSingle(),
+				rand.NextSingle(),
+				rand.NextSingle()
+			);
 		}
 
-		public static Vector4 NextSignedVector4(this Random rand)
+		public static Vector4 NextVector4Signed(this Random rand)
 		{
-			return new()
-			{
-				W = rand.NextSingle() * rand.NextSign(),
-				X = rand.NextSingle() * rand.NextSign(),
-				Y = rand.NextSingle() * rand.NextSign(),
-				Z = rand.NextSingle() * rand.NextSign()
-			};
+			return new(
+				rand.NextSingle() * rand.NextSign(),
+				rand.NextSingle() * rand.NextSign(),
+				rand.NextSingle() * rand.NextSign(),
+				rand.NextSingle() * rand.NextSign()
+			);
 		}
 
 		public static Vector2 Clamp(Vector2 val, float min, float max)
 		{
-			return new()
-			{
-				X = Math.Clamp(val.X, min, max),
-				Y = Math.Clamp(val.Y, min, max)
-			};
+			return new(
+				Math.Clamp(val.X, min, max),
+				Math.Clamp(val.Y, min, max)
+			);
 		}
 
 		public static Vector4 Clamp(Vector4 val, float min, float max)
 		{
-			return new()
-			{
-				W = Math.Clamp(val.W, min, max),
-				X = Math.Clamp(val.X, min, max),
-				Y = Math.Clamp(val.Y, min, max),
-				Z = Math.Clamp(val.Z, min, max),
-			};
+			return new(
+				Math.Clamp(val.X, min, max),
+				Math.Clamp(val.Y, min, max),
+				Math.Clamp(val.Z, min, max),
+				Math.Clamp(val.W, min, max)
+			);
 		}
 
 		public static int NextSign(this Random rand)
-			=> rand.Next(2) == 0 ? 1 : -1;
+			=> rand.Next(2) * 2 - 1;
+
+		#endregion
 	}
 }

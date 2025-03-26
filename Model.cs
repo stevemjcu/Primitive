@@ -11,10 +11,13 @@ namespace Primitive
 
 		public Queue<Shape> Shapes { get; } = [];
 
+		private Color Background { get; }
+
 		public Model(Image<Rgba32> target, Color background)
 		{
 			Target = target;
 			Current = new(Target.Width, Target.Height, background);
+			Background = background;
 		}
 
 		public void Add(Shape shape, int trials, int limit)
@@ -58,9 +61,9 @@ namespace Primitive
 			return shape;
 		}
 
-		public Image<Rgba32> Export(int size, Color background)
+		public Image<Rgba32> Export(int size)
 		{
-			var image = new Image<Rgba32>(size, size, background);
+			var image = new Image<Rgba32>(size, size, Background);
 			foreach (var s in Shapes) s.Draw(image);
 			return image;
 		}
