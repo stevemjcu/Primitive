@@ -20,20 +20,22 @@ namespace Primitive
 			Background = background;
 		}
 
-		public void Add(Shape shape, int trials, int limit)
+		public void Add<T>(int trials, int limit) where T : Shape, new()
 		{
-			var s = Optimize(Trial(shape, trials), limit);
+			var s = Optimize(Trial<T>(trials), limit);
 			s.Draw(Current);
 			Shapes.Enqueue(s);
 		}
 
-		private Shape Trial(Shape shape, int trials)
+		private Shape Trial<T>(int n) where T : Shape, new()
 		{
-			for (var i = 0; i < trials; i++)
+			var shape = new T();
+			for (var i = 0; i < n; i++)
 			{
 				var c = Current.Clone();
-				var s = shape.New();
+				var s = new T();
 
+				s.Randomize();
 				s.Sample(Target);
 				s.Draw(c);
 
@@ -44,9 +46,9 @@ namespace Primitive
 			return shape;
 		}
 
-		private Shape Optimize(Shape shape, int limit)
+		private Shape Optimize(Shape shape, int n)
 		{
-			for (var i = 0; i < limit; i++)
+			for (var i = 0; i < n; i++)
 			{
 				var c = Current.Clone();
 				var s = shape.Clone();

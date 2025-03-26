@@ -14,9 +14,9 @@ namespace Primitive
 
 		public float Error { get; set; } = int.MaxValue;
 
-		public abstract Shape New();
-
 		public Shape Clone() => (Shape)MemberwiseClone();
+
+		public abstract void Randomize();
 
 		public abstract void Mutate();
 

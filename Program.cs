@@ -70,9 +70,10 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 			: Helper.AverageColor(input);
 
 		var model = new Model(input, background);
-		var shape = settings.Shape switch
+
+		Action action = settings.Shape switch
 		{
-			"Ellipse" => (Shape)new Ellipse(),
+			"Ellipse" => () => model.Add<Ellipse>(settings.Trials, settings.Limit),
 			_ => throw new Exception("Invalid shape")
 		};
 
@@ -81,7 +82,7 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 			var task = ctx.AddTask("[green]Adding shapes[/]", true, settings.Iterations);
 			while (!ctx.IsFinished)
 			{
-				model.Add(shape.New(), settings.Trials, settings.Limit);
+				action.Invoke();
 				task.Increment(1);
 			}
 		});

@@ -98,6 +98,9 @@ namespace Primitive
 			);
 		}
 
+		public static int NextSign(this Random rand)
+			=> rand.Next(2) * 2 - 1;
+
 		public static Vector2 Clamp(Vector2 val, float min, float max)
 		{
 			return new(
@@ -115,9 +118,6 @@ namespace Primitive
 				Math.Clamp(val.W, min, max)
 			);
 		}
-
-		public static int NextSign(this Random rand)
-			=> rand.Next(2) * 2 - 1;
 
 		#endregion
 	}
