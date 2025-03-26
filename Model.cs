@@ -13,6 +13,8 @@ namespace Primitive
 
 		private Color Background { get; }
 
+		public Model(Image<Rgba32> target) : this(target, Helper.AverageColor(target)) { }
+
 		public Model(Image<Rgba32> target, Color background)
 		{
 			Target = target;
@@ -20,11 +22,11 @@ namespace Primitive
 			Background = background;
 		}
 
-		public void Add<T>(int trials, int limit) where T : Shape, new()
+		public void Add<T>(int trials, int failures) where T : Shape, new()
 		{
-			var s = Optimize(Trial<T>(trials), limit);
-			s.Draw(Current);
-			Shapes.Enqueue(s);
+			var shape = Optimize(Trial<T>(trials), failures);
+			shape.Draw(Current);
+			Shapes.Enqueue(shape);
 		}
 
 		private Shape Trial<T>(int n) where T : Shape, new()

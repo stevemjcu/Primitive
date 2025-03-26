@@ -1,3 +1,3 @@
 # Primitive
 
-This is a recreation of Michael Fogleman's project, [Primitive](https://github.com/fogleman/primitive).
+This is an educational project inspired by Michael Fogleman's [Primitive](https://github.com/fogleman/primitive).

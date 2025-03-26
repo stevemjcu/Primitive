@@ -10,6 +10,7 @@ using Color = SixLabors.ImageSharp.Color;
 
 var app = new CommandApp<RootCommand>();
 app.Configure(c => c.SetExceptionHandler((ex, _) => AnsiConsole.WriteException(ex)));
+app.WithDescription("A tool which recreates images using geometric shapes");
 return app.Run(args);
 
 internal sealed class RootCommand : Command<RootCommand.Settings>
@@ -30,21 +31,22 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 
 		[Description("Number of shapes")]
 		[CommandArgument(3, "<Iterations>")]
-		public required int Iterations { get; set; }
+		public int Iterations { get; set; }
 
-		[Description("Number of starting shapes per iteration")]
+		[Description("Number of shapes to trial before starting iteration")]
 		[CommandOption("--trials")]
 		[DefaultValue(200)]
 		public int Trials { get; set; }
 
-		[Description("Number of allowed consecutive failures per iteration")]
-		[CommandOption("--limit")]
+		[Description("Number of consecutive failures before ending iteration")]
+		[CommandOption("--failures")]
 		[DefaultValue(30)]
-		public int Limit { get; set; }
+		public int Failures { get; set; }
 
-		[Description("Background color hex code; auto-detected if unspecified")]
+		[Description("Background color hex code")]
 		[CommandOption("--background")]
-		public string? Background { get; set; }
+		[DefaultValue("")]
+		public required string Background { get; set; }
 
 		[Description("Dimension to resize input image to")]
 		[CommandOption("--input-size")]
@@ -65,17 +67,15 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 			Size = new(settings.InputSize, settings.InputSize)
 		}));
 
-		var background = settings.Background is not null
-			? Color.Parse(settings.Background)
-			: Helper.AverageColor(input);
+		var model = settings.Background == string.Empty
+			? new Model(input)
+			: new Model(input, Color.Parse(settings.Background));
 
-		var model = new Model(input, background);
-
-		Action action = settings.Shape switch
+		var action = (Action)(settings.Shape switch
 		{
-			"Ellipse" => () => model.Add<Ellipse>(settings.Trials, settings.Limit),
+			"Ellipse" => () => model.Add<Ellipse>(settings.Trials, settings.Failures),
 			_ => throw new Exception("Invalid shape")
-		};
+		});
 
 		AnsiConsole.Progress().Start(ctx =>
 		{

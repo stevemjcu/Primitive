@@ -8,14 +8,15 @@ namespace Primitive
 	{
 		#region Image
 
-		public static Color AverageColor(Image<Rgba32> image, Rectangle? area = null)
-		{
-			var rect = area ?? image.Bounds;
+		public static Color AverageColor(Image<Rgba32> image)
+			=> AverageColor(image, image.Bounds);
 
-			var a = Math.Max(0, rect.Top);
-			var b = Math.Min(image.Height, rect.Bottom);
-			var c = Math.Max(0, rect.Left);
-			var d = Math.Min(image.Width, rect.Right);
+		public static Color AverageColor(Image<Rgba32> image, Rectangle area)
+		{
+			var a = Math.Max(0, area.Top);
+			var b = Math.Min(image.Height, area.Bottom);
+			var c = Math.Max(0, area.Left);
+			var d = Math.Min(image.Width, area.Right);
 
 			var sum = Vector4.Zero;
 			var pixels = (b - a) * (d - c);
