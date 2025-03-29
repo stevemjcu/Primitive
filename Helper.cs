@@ -22,7 +22,7 @@ namespace Primitive
 				for (var i = area.Top; i < area.Bottom; i++)
 				{
 					var row = rows.GetRowSpan(i);
-					for (var j = area.Left; j < area.Height; j++)
+					for (var j = area.Left; j < area.Right; j++)
 					{
 						sum += row[j].ToVector4();
 					}
