@@ -5,11 +5,13 @@ namespace Primitive
 {
 	internal class Model
 	{
-		public Image<Rgba32> Target { get; }
+		private Image<Rgba32> Target { get; }
 
-		public Image<Rgba32> Current { get; }
+		private Image<Rgba32> Current { get; }
 
-		public Queue<Shape> Shapes { get; } = [];
+		private float Error { get; set; }
+
+		private Queue<Shape> Shapes { get; } = [];
 
 		private Color Background { get; }
 
@@ -26,43 +28,43 @@ namespace Primitive
 		{
 			var shape = Optimize(Trial<T>(trials), failures);
 			shape.Draw(Current);
+			Error = Helper.AverageError(Current, Target);
 			Shapes.Enqueue(shape);
 		}
 
 		private Shape Trial<T>(int n) where T : Shape, new()
 		{
-			var shape = new T();
+			var best = new T();
 			for (var i = 0; i < n; i++)
 			{
-				var c = Current.Clone();
-				var s = new T();
+				var shape = new T();
+				var image = Current.Clone();
 
-				s.Randomize();
-				s.Sample(Target);
-				s.Draw(c);
+				shape.Randomize();
+				shape.Sample(Target);
+				shape.Draw(image);
 
-				s.Error = Helper.Rmse(c, Target);
-				if (s.Error < shape.Error)
-					shape = s;
+				shape.Error = Helper.AverageError(image, Target);
+				if (shape.Error < best.Error) best = shape;
 			}
-			return shape;
+			return best;
 		}
 
-		private Shape Optimize(Shape shape, int n)
+		private Shape Optimize(Shape start, int n)
 		{
+			var best = start;
 			for (var i = 0; i < n; i++)
 			{
-				var c = Current.Clone();
-				var s = shape.Clone();
+				var shape = best.Clone();
+				var image = Current.Clone();
 
-				s.Mutate();
-				s.Draw(c);
+				shape.Mutate();
+				shape.Draw(image);
 
-				s.Error = Helper.Rmse(c, Target);
-				if (s.Error < shape.Error)
-					(shape, i) = (s, 0);
+				shape.Error = Helper.AverageError(image, Target);
+				if (shape.Error < best.Error) (best, i) = (shape, 0);
 			}
-			return shape;
+			return best;
 		}
 
 		public Image<Rgba32> Export(int size)

@@ -13,20 +13,16 @@ namespace Primitive
 
 		public static Color AverageColor(Image<Rgba32> image, Rectangle area)
 		{
-			var a = Math.Max(0, area.Top);
-			var b = Math.Min(image.Height, area.Bottom);
-			var c = Math.Max(0, area.Left);
-			var d = Math.Min(image.Width, area.Right);
-
+			area = Rectangle.Intersect(image.Bounds, area);
 			var sum = Vector4.Zero;
-			var pixels = (b - a) * (d - c);
+			var pixels = area.Width * area.Height;
 
 			image.ProcessPixelRows(rows =>
 			{
-				for (var i = a; i < b; i++)
+				for (var i = area.Top; i < area.Bottom; i++)
 				{
 					var row = rows.GetRowSpan(i);
-					for (var j = c; j < d; j++)
+					for (var j = area.Left; j < area.Height; j++)
 					{
 						sum += row[j].ToVector4();
 					}
@@ -36,9 +32,9 @@ namespace Primitive
 			return new Color(sum / pixels);
 		}
 
-		public static float Rmse(Image<Rgba32> source, Image<Rgba32> target)
+		public static float AverageError(Image<Rgba32> source, Image<Rgba32> target)
 		{
-			var sum = Vector4.Zero;
+			var sum = 0f;
 			var channels = source.Height * source.Width * 4;
 
 			source.ProcessPixelRows(target, (rows1, rows2) =>
@@ -50,13 +46,52 @@ namespace Primitive
 					for (var j = 0; j < rows1.Width; j++)
 					{
 						var diff = row1[j].ToVector4() - row2[j].ToVector4();
-						sum += diff * diff;
+						sum += (diff * diff).Sum();
 					}
 				}
 			});
 
-			return (float)Math.Sqrt(
-				(sum.W + sum.X + sum.Y + sum.Z) / channels);
+			return (float)Math.Sqrt(sum / channels);
+		}
+
+		// Calculate diff in area both before and after
+		// Subtract previous diff from total, replace with new diff
+		// Return total
+		public static float AverageError(Image<Rgba32> before, Image<Rgba32> after, Image<Rgba32> target, Rectangle area, float error)
+		{
+			area = Rectangle.Intersect(before.Bounds, area);
+			var channels = before.Height * before.Width * 4;
+			var sum = (float)Math.Pow(error, 2) * channels;
+
+			before.ProcessPixelRows(target, (rows1, rows2) =>
+			{
+				for (var i = area.Top; i < area.Bottom; i++)
+				{
+					var row1 = rows1.GetRowSpan(i);
+					var row2 = rows2.GetRowSpan(i);
+					for (var j = area.Left; j < area.Right; j++)
+					{
+						var diff = row1[j].ToVector4() - row2[j].ToVector4();
+						sum -= (diff * diff).Sum();
+					}
+				}
+			});
+
+			after.ProcessPixelRows(target, (rows1, rows2) =>
+			{
+				for (var i = area.Top; i < area.Bottom; i++)
+				{
+					var row1 = rows1.GetRowSpan(i);
+					var row2 = rows2.GetRowSpan(i);
+					for (var j = area.Left; j < area.Right; j++)
+					{
+						var diff = row1[j].ToVector4() - row2[j].ToVector4();
+						sum += (diff * diff).Sum();
+					}
+				}
+			});
+
+			return (float)Math.Sqrt(sum / channels);
 		}
 
 		#endregion
@@ -119,6 +154,9 @@ namespace Primitive
 				Math.Clamp(val.W, min, max)
 			);
 		}
+
+		public static float Sum(this Vector4 val)
+			=> val.X + val.Y + val.Z + val.W;
 
 		#endregion
 	}
