@@ -12,8 +12,6 @@ namespace Primitive
 
 		public Vector4 Color { get; protected set; }
 
-		public float Error { get; set; } = int.MaxValue;
-
 		public Shape Clone() => (Shape)MemberwiseClone();
 
 		public abstract void Randomize();

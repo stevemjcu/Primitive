@@ -5,15 +5,13 @@ namespace Primitive
 {
 	internal class Model
 	{
-		private Image<Rgba32> Target { get; }
+		public Image<Rgba32> Target { get; }
 
-		private Image<Rgba32> Current { get; }
+		public Image<Rgba32> Current { get; private set; }
 
-		private float Error { get; set; }
+		public Queue<Shape> Shapes { get; } = [];
 
-		private Queue<Shape> Shapes { get; } = [];
-
-		private Color Background { get; }
+		public Color Background { get; }
 
 		public Model(Image<Rgba32> target) : this(target, Helper.AverageColor(target)) { }
 
@@ -26,15 +24,14 @@ namespace Primitive
 
 		public void Add<T>(int trials, int failures) where T : Shape, new()
 		{
-			var shape = Optimize(Trial<T>(trials), failures);
-			shape.Draw(Current);
-			Error = Helper.AverageError(Current, Target);
-			Shapes.Enqueue(shape);
+			var state = Optimize(Trial<T>(trials), failures);
+			Current = state.Image;
+			Shapes.Enqueue(state.Shape);
 		}
 
-		private Shape Trial<T>(int n) where T : Shape, new()
+		private State Trial<T>(int n) where T : Shape, new()
 		{
-			var best = new T();
+			var best = new State(new T(), Current);
 			for (var i = 0; i < n; i++)
 			{
 				var shape = new T();
@@ -44,25 +41,27 @@ namespace Primitive
 				shape.Sample(Target);
 				shape.Draw(image);
 
-				shape.Error = Helper.AverageError(image, Target);
-				if (shape.Error < best.Error) best = shape;
+				var error = Helper.AverageError(image, Target);
+				if (error < best.Error)
+					best = new(shape, image, error);
 			}
 			return best;
 		}
 
-		private Shape Optimize(Shape start, int n)
+		private State Optimize(State start, int n)
 		{
 			var best = start;
 			for (var i = 0; i < n; i++)
 			{
-				var shape = best.Clone();
+				var shape = best.Shape.Clone();
 				var image = Current.Clone();
 
 				shape.Mutate();
 				shape.Draw(image);
 
-				shape.Error = Helper.AverageError(image, Target);
-				if (shape.Error < best.Error) (best, i) = (shape, 0);
+				var error = Helper.AverageError(image, Target);
+				if (error < best.Error)
+					(best, i) = (new(shape, image, error), 0);
 			}
 			return best;
 		}
@@ -73,5 +72,12 @@ namespace Primitive
 			foreach (var s in Shapes) s.Draw(image);
 			return image;
 		}
+	}
+
+	internal struct State(Shape shape, Image<Rgba32> image, float error = float.MaxValue)
+	{
+		public Shape Shape = shape;
+		public Image<Rgba32> Image = image;
+		public float Error = error;
 	}
 }
