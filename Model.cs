@@ -29,6 +29,7 @@ namespace Primitive
 		{
 			var state = Optimize(Trial<T>(trials), failures);
 			Current = state.Image;
+			Error = state.Error;
 			Shapes.Enqueue(state.Shape);
 		}
 
@@ -45,7 +46,9 @@ namespace Primitive
 				shape.Draw(image);
 
 				var error = Helper.RootMeanSquareError(
-					Current, image, Target, shape.Bounds(image.Bounds), Error);
+					Current, image, Target,
+					shape.Bounds(image.Bounds), Error);
+
 				if (error < best.Error)
 					best = new(shape, image, error);
 			}
@@ -64,7 +67,9 @@ namespace Primitive
 				shape.Draw(image);
 
 				var error = Helper.RootMeanSquareError(
-					best.Image, image, Target, shape.Bounds(image.Bounds), best.Error);
+					Current, image, Target,
+					shape.Bounds(image.Bounds), Error);
+
 				if (error < best.Error)
 					(best, i) = (new(shape, image, error), 0);
 			}

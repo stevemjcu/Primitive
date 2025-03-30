@@ -15,8 +15,6 @@ namespace Primitive
 		{
 			area = Rectangle.Intersect(image.Bounds, area);
 			var sum = Vector4.Zero;
-			var pixels = area.Width * area.Height;
-
 			image.ProcessPixelRows(rows =>
 			{
 				for (var i = area.Top; i < area.Bottom; i++)
@@ -28,30 +26,13 @@ namespace Primitive
 					}
 				}
 			});
-
-			return new Color(sum / pixels);
+			return new Color(sum / (area.Width * area.Height));
 		}
 
 		public static float RootMeanSquareError(Image<Rgba32> source, Image<Rgba32> target)
 		{
-			var sum = 0f;
-			var channels = source.Height * source.Width * 4;
-
-			source.ProcessPixelRows(target, (rows1, rows2) =>
-			{
-				for (var i = 0; i < rows1.Height; i++)
-				{
-					var row1 = rows1.GetRowSpan(i);
-					var row2 = rows2.GetRowSpan(i);
-					for (var j = 0; j < rows1.Width; j++)
-					{
-						var diff = row1[j].ToVector4() - row2[j].ToVector4();
-						sum += (diff * diff).Sum();
-					}
-				}
-			});
-
-			return (float)Math.Sqrt(sum / channels);
+			var sum = SquareErrorSum(source, target, source.Bounds);
+			return (float)Math.Sqrt(sum / (source.Height * source.Width * 4));
 		}
 
 		public static float RootMeanSquareError(
@@ -60,23 +41,19 @@ namespace Primitive
 		{
 			area = Rectangle.Intersect(before.Bounds, area);
 			var channels = before.Height * before.Width * 4;
+
+			// TODO: Is it necessary to undo/redo the root mean?
+			// Or can I just go ahead and take the root mean of the square error sum?
 			var sum = (float)Math.Pow(error, 2) * channels;
+			sum -= SquareErrorSum(before, target, area);
+			sum += SquareErrorSum(after, target, area);
+			return (float)Math.Sqrt(sum / channels);
+		}
 
-			before.ProcessPixelRows(target, (rows1, rows2) =>
-			{
-				for (var i = area.Top; i < area.Bottom; i++)
-				{
-					var row1 = rows1.GetRowSpan(i);
-					var row2 = rows2.GetRowSpan(i);
-					for (var j = area.Left; j < area.Right; j++)
-					{
-						var diff = row1[j].ToVector4() - row2[j].ToVector4();
-						sum -= (diff * diff).Sum();
-					}
-				}
-			});
-
-			after.ProcessPixelRows(target, (rows1, rows2) =>
+		private static float SquareErrorSum(Image<Rgba32> source, Image<Rgba32> target, Rectangle area)
+		{
+			var sum = 0f;
+			source.ProcessPixelRows(target, (rows1, rows2) =>
 			{
 				for (var i = area.Top; i < area.Bottom; i++)
 				{
@@ -89,8 +66,7 @@ namespace Primitive
 					}
 				}
 			});
-
-			return (float)Math.Sqrt(sum / channels);
+			return sum;
 		}
 
 		#endregion

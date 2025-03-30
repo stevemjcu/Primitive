@@ -6,6 +6,7 @@ using SixLabors.ImageSharp.Processing;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using System.ComponentModel;
+using System.Diagnostics;
 using Color = SixLabors.ImageSharp.Color;
 
 var app = new CommandApp<RootCommand>().WithDescription(Resources.DescriptionApp);
@@ -80,6 +81,9 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 			_ => throw new Exception(Resources.ErrorInvalidShape)
 		});
 
+		var stopwatch = new Stopwatch();
+		stopwatch.Start();
+
 		AnsiConsole.Progress().Start(ctx =>
 		{
 			var task = ctx.AddTask(Resources.DescriptionProgress, true, settings.Iterations);
@@ -89,6 +93,9 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 				task.Increment(1);
 			}
 		});
+
+		stopwatch.Stop();
+		AnsiConsole.WriteLine($"Elapsed time: {stopwatch.Elapsed:c}");
 
 		using var output = model.Export(settings.OutputSize);
 		output.Save(settings.OutputPath);
