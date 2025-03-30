@@ -32,7 +32,7 @@ namespace Primitive
 			return new Color(sum / pixels);
 		}
 
-		public static float AverageError(Image<Rgba32> source, Image<Rgba32> target)
+		public static float RootMeanSquareError(Image<Rgba32> source, Image<Rgba32> target)
 		{
 			var sum = 0f;
 			var channels = source.Height * source.Width * 4;
@@ -54,10 +54,9 @@ namespace Primitive
 			return (float)Math.Sqrt(sum / channels);
 		}
 
-		// Calculate diff in area both before and after
-		// Subtract previous diff from total, replace with new diff
-		// Return total
-		public static float AverageError(Image<Rgba32> before, Image<Rgba32> after, Image<Rgba32> target, Rectangle area, float error)
+		public static float RootMeanSquareError(
+			Image<Rgba32> before, Image<Rgba32> after, Image<Rgba32> target,
+			Rectangle area, float error)
 		{
 			area = Rectangle.Intersect(before.Bounds, area);
 			var channels = before.Height * before.Width * 4;

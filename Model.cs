@@ -9,9 +9,11 @@ namespace Primitive
 
 		public Image<Rgba32> Current { get; private set; }
 
-		public Queue<Shape> Shapes { get; } = [];
+		private float Error { get; set; }
 
-		public Color Background { get; }
+		private Queue<Shape> Shapes { get; } = [];
+
+		private Color Background { get; }
 
 		public Model(Image<Rgba32> target) : this(target, Helper.AverageColor(target)) { }
 
@@ -19,6 +21,7 @@ namespace Primitive
 		{
 			Target = target;
 			Current = new(Target.Width, Target.Height, background);
+			Error = Helper.RootMeanSquareError(Current, target);
 			Background = background;
 		}
 
@@ -41,7 +44,8 @@ namespace Primitive
 				shape.Sample(Target);
 				shape.Draw(image);
 
-				var error = Helper.AverageError(image, Target);
+				var error = Helper.RootMeanSquareError(
+					Current, image, Target, shape.Bounds(image.Bounds), Error);
 				if (error < best.Error)
 					best = new(shape, image, error);
 			}
@@ -59,7 +63,8 @@ namespace Primitive
 				shape.Mutate();
 				shape.Draw(image);
 
-				var error = Helper.AverageError(image, Target);
+				var error = Helper.RootMeanSquareError(
+					best.Image, image, Target, shape.Bounds(image.Bounds), best.Error);
 				if (error < best.Error)
 					(best, i) = (new(shape, image, error), 0);
 			}

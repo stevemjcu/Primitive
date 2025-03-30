@@ -37,7 +37,6 @@ namespace Primitive.Shapes
 		{
 			var (position, size) = (Position * image.Width, Size * image.Width);
 			var area = new Rectangle(Point.Round(position - size / 2), new(Point.Round(size)));
-
 			Color = (Vector4)Helper.AverageColor(image, area).WithAlpha(.5f);
 		}
 
@@ -45,7 +44,6 @@ namespace Primitive.Shapes
 		{
 			var (position, size) = (Position * image.Width, Size * image.Width);
 			var path = new EllipsePolygon(position, new SizeF(size));
-
 			image.Mutate(x => x.Fill(new Color(Color), path));
 		}
 	}

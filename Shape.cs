@@ -21,5 +21,11 @@ namespace Primitive
 		public abstract void Sample(Image<Rgba32> image);
 
 		public abstract void Draw(Image<Rgba32> image);
+
+		public Rectangle Bounds(Rectangle parent)
+		{
+			var (position, size) = (Position * parent.Width, Size * parent.Width);
+			return new(Point.Round(position - size / 2), new(Point.Round(size)));
+		}
 	}
 }
