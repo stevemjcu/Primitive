@@ -133,15 +133,6 @@ namespace Primitive {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adding shapes.
-        /// </summary>
-        internal static string DescriptionProgress {
-            get {
-                return ResourceManager.GetString("DescriptionProgress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Type of shape.
         /// </summary>
         internal static string DescriptionShape {
@@ -165,6 +156,24 @@ namespace Primitive {
         internal static string ErrorInvalidShape {
             get {
                 return ResourceManager.GetString("ErrorInvalidShape", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elapsed time: {0}.
+        /// </summary>
+        internal static string MessageElapsedTime {
+            get {
+                return ResourceManager.GetString("MessageElapsedTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adding shapes:.
+        /// </summary>
+        internal static string MessageProgress {
+            get {
+                return ResourceManager.GetString("MessageProgress", resourceCulture);
             }
         }
     }

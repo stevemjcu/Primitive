@@ -2,7 +2,7 @@
   "profiles": {
     "Primitive": {
       "commandName": "Project",
-      "commandLineArgs": "\"..\\..\\..\\Samples\\MonaLisa.png\"\r\n\"..\\..\\..\\Samples\\MonaLisa_200-200-0.png\"\r\nEllipse\r\n200\r\n--trials 200\r\n--failures 0"
+      "commandLineArgs": "\"..\\..\\..\\Samples\\MonaLisa.png\"\r\n\"..\\..\\..\\Samples\\MonaLisa_200-200-50.png\"\r\nEllipse\r\n--iterations 100\r\n--trials 200\r\n--failures 50"
     }
   }
 }

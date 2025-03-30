@@ -5,52 +5,53 @@ namespace Primitive
 {
 	internal class Model
 	{
-		public Image<Rgba32> Target { get; }
+		private record State(Shape Shape, float Error = float.MaxValue);
 
-		public Image<Rgba32> Current { get; private set; }
+		private readonly Image<Rgba32> Target;
+		private readonly Image<Rgba32> Canvas;
+		private float Error;
 
-		private float Error { get; set; }
+		private readonly Queue<Shape> Shapes = [];
+		private readonly Color Background;
 
-		private Queue<Shape> Shapes { get; } = [];
-
-		private Color Background { get; }
-
-		public Model(Image<Rgba32> target) : this(target, Helper.AverageColor(target)) { }
+		public Model(Image<Rgba32> target)
+			: this(target, Helper.AverageColor(target))
+		{ }
 
 		public Model(Image<Rgba32> target, Color background)
 		{
 			Target = target;
-			Current = new(Target.Width, Target.Height, background);
-			Error = Helper.RootMeanSquareError(Current, target);
+			Canvas = new(Target.Width, Target.Height, background);
+			Error = Helper.RootMeanSquareError(Canvas, target);
 			Background = background;
 		}
 
 		public void Add<T>(int trials, int failures) where T : Shape, new()
 		{
 			var state = Optimize(Trial<T>(trials), failures);
-			Current = state.Image;
+			state.Shape.Draw(Canvas);
 			Error = state.Error;
 			Shapes.Enqueue(state.Shape);
 		}
 
 		private State Trial<T>(int n) where T : Shape, new()
 		{
-			var best = new State(new T(), Current);
+			var best = new State(new T());
 			for (var i = 0; i < n; i++)
 			{
 				var shape = new T();
-				var image = Current.Clone();
+				var canvas = Canvas.Clone();
 
 				shape.Randomize();
 				shape.Sample(Target);
-				shape.Draw(image);
+				shape.Draw(canvas);
 
 				var error = Helper.RootMeanSquareError(
-					Current, image, Target,
-					shape.Bounds(image.Bounds), Error);
+					Canvas, canvas, Target,
+					shape.Bounds(canvas.Bounds), Error);
 
 				if (error < best.Error)
-					best = new(shape, image, error);
+					best = new(shape, error);
 			}
 			return best;
 		}
@@ -61,17 +62,17 @@ namespace Primitive
 			for (var i = 0; i < n; i++)
 			{
 				var shape = best.Shape.Clone();
-				var image = Current.Clone();
+				var canvas = Canvas.Clone();
 
 				shape.Mutate();
-				shape.Draw(image);
+				shape.Draw(canvas);
 
 				var error = Helper.RootMeanSquareError(
-					Current, image, Target,
-					shape.Bounds(image.Bounds), Error);
+					Canvas, canvas, Target,
+					shape.Bounds(canvas.Bounds), Error);
 
 				if (error < best.Error)
-					(best, i) = (new(shape, image, error), 0);
+					(best, i) = (new(shape, error), 0);
 			}
 			return best;
 		}
@@ -82,12 +83,5 @@ namespace Primitive
 			foreach (var s in Shapes) s.Draw(image);
 			return image;
 		}
-	}
-
-	internal struct State(Shape shape, Image<Rgba32> image, float error = float.MaxValue)
-	{
-		public Shape Shape = shape;
-		public Image<Rgba32> Image = image;
-		public float Error = error;
 	}
 }

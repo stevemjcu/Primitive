@@ -6,9 +6,7 @@ namespace Primitive
 {
 	internal abstract class Shape
 	{
-		public Vector2 Position { get; protected set; }
-
-		public Vector2 Size { get; protected set; }
+		protected readonly static Random Rand = new();
 
 		public Vector4 Color { get; protected set; }
 
@@ -22,10 +20,6 @@ namespace Primitive
 
 		public abstract void Draw(Image<Rgba32> image);
 
-		public Rectangle Bounds(Rectangle parent)
-		{
-			var (position, size) = (Position * parent.Width, Size * parent.Width);
-			return new(Point.Round(position - size / 2), new(Point.Round(size)));
-		}
+		public abstract Rectangle Bounds(Rectangle area);
 	}
 }

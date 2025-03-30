@@ -141,9 +141,6 @@
   <data name="DescriptionOutputSize" xml:space="preserve">
     <value>Size of output image</value>
   </data>
-  <data name="DescriptionProgress" xml:space="preserve">
-    <value>Adding shapes</value>
-  </data>
   <data name="DescriptionShape" xml:space="preserve">
     <value>Type of shape</value>
   </data>
@@ -152,5 +149,11 @@
   </data>
   <data name="ErrorInvalidShape" xml:space="preserve">
     <value>Invalid shape</value>
+  </data>
+  <data name="MessageElapsedTime" xml:space="preserve">
+    <value>Elapsed time: {0}</value>
+  </data>
+  <data name="MessageProgress" xml:space="preserve">
+    <value>Adding shapes:</value>
   </data>
 </root>

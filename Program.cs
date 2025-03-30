@@ -15,6 +15,10 @@ return app.Run(args);
 
 internal sealed class RootCommand : Command<RootCommand.Settings>
 {
+	private sealed class ResourceDescriptionAttribute(string key)
+		: DescriptionAttribute(Resources.ResourceManager.GetString(key)!)
+	{ }
+
 	public class Settings : CommandSettings
 	{
 		[ResourceDescription("DescriptionInputPath")]
@@ -30,7 +34,8 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 		public required string Shape { get; set; }
 
 		[ResourceDescription("DescriptionIterations")]
-		[CommandArgument(3, "<Iterations>")]
+		[CommandOption("--iterations")]
+		[DefaultValue(100)]
 		public int Iterations { get; set; }
 
 		[ResourceDescription("DescriptionTrials")]
@@ -59,10 +64,6 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 		public int OutputSize { get; set; }
 	}
 
-	public sealed class ResourceDescriptionAttribute(string key)
-		: DescriptionAttribute(Resources.ResourceManager.GetString(key)!)
-	{ }
-
 	public override int Execute(CommandContext context, Settings settings)
 	{
 		using var input = Image.Load<Rgba32>(settings.InputPath);
@@ -86,7 +87,7 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 
 		AnsiConsole.Progress().Start(ctx =>
 		{
-			var task = ctx.AddTask(Resources.DescriptionProgress, true, settings.Iterations);
+			var task = ctx.AddTask(Resources.MessageProgress, true, settings.Iterations);
 			while (!ctx.IsFinished)
 			{
 				action.Invoke();
@@ -95,7 +96,8 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 		});
 
 		stopwatch.Stop();
-		AnsiConsole.WriteLine($"Elapsed time: {stopwatch.Elapsed:c}");
+		AnsiConsole.WriteLine(string.Format(
+			Resources.MessageElapsedTime, stopwatch.Elapsed.ToString("c")));
 
 		using var output = model.Export(settings.OutputSize);
 		output.Save(settings.OutputPath);
