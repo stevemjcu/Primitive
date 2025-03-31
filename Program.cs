@@ -35,7 +35,7 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 
 		[ResourceDescription("DescriptionIterations")]
 		[CommandOption("--iterations")]
-		[DefaultValue(100)]
+		[DefaultValue(200)]
 		public int Iterations { get; set; }
 
 		[ResourceDescription("DescriptionTrials")]
@@ -60,7 +60,7 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 
 		[ResourceDescription("DescriptionOutputSize")]
 		[CommandOption("--output-size")]
-		[DefaultValue(1024)]
+		[DefaultValue(512)]
 		public int OutputSize { get; set; }
 	}
 
@@ -96,7 +96,7 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 		});
 
 		stopwatch.Stop();
-		AnsiConsole.WriteLine(string.Format(
+		AnsiConsole.MarkupLine(string.Format(
 			Resources.MessageElapsedTime, stopwatch.Elapsed.ToString("c")));
 
 		using var output = model.Export(settings.OutputSize);

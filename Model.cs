@@ -21,7 +21,7 @@ namespace Primitive
 		public Model(Image<Rgba32> target, Color background)
 		{
 			Target = target;
-			Canvas = new(Target.Width, Target.Height, background);
+			Canvas = new(target.Width, target.Height, background);
 			Error = Helper.RootMeanSquareError(Canvas, target);
 			Background = background;
 		}

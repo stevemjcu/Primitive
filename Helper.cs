@@ -42,8 +42,6 @@ namespace Primitive
 			area = Rectangle.Intersect(before.Bounds, area);
 			var channels = before.Height * before.Width * 4;
 
-			// TODO: Is it necessary to undo/redo the root mean?
-			// Or can I just go ahead and take the root mean of the square error sum?
 			var sum = (float)Math.Pow(error, 2) * channels;
 			sum -= SquareErrorSum(before, target, area);
 			sum += SquareErrorSum(after, target, area);
