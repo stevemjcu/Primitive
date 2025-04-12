@@ -36,8 +36,9 @@ namespace Primitive
 
 		private State Trial<T>(int n) where T : IShape, new()
 		{
+			var @lock = new object();
 			var best = new State(new T());
-			for (var i = 0; i < n; i++)
+			Parallel.For(0, n, i =>
 			{
 				var shape = new T();
 				var canvas = Canvas.Clone();
@@ -49,9 +50,10 @@ namespace Primitive
 					Canvas, canvas, Target,
 					shape.Bounds(canvas.Bounds), Error);
 
-				if (error < best.Error)
-					best = new(shape, error);
-			}
+				lock (@lock)
+					if (error < best.Error)
+						best = new(shape, error);
+			});
 			return best;
 		}
 
