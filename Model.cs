@@ -26,7 +26,7 @@ namespace Primitive
 			Background = background;
 		}
 
-		public void Step<T>(int trials, int failures) where T : IShape, new()
+		public void Add<T>(int trials, int failures) where T : IShape, new()
 		{
 			var state = Optimize(Trial<T>(trials), failures);
 			state.Shape.Draw(Canvas);

@@ -77,7 +77,7 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 			: new Model(input, Color.Parse(settings.Background));
 
 		void Step<T>() where T : IShape, new() =>
-			model.Step<T>(settings.Trials, settings.Failures);
+			model.Add<T>(settings.Trials, settings.Failures);
 
 		var action = (Action)(settings.Shape switch
 		{

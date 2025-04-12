@@ -7,8 +7,6 @@ namespace Primitive
 	{
 		public IShape Clone();
 
-		public void Randomize();
-
 		public void Mutate();
 
 		public void Sample(Image<Rgba32> image);
