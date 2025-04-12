@@ -5,13 +5,13 @@ namespace Primitive
 {
 	internal class Model
 	{
-		private record State(Shape Shape, float Error = float.MaxValue);
+		private record State(IShape Shape, float Error = float.MaxValue);
 
 		private readonly Image<Rgba32> Target;
 		private readonly Image<Rgba32> Canvas;
 		private float Error;
 
-		private readonly Queue<Shape> Shapes = [];
+		private readonly Queue<IShape> Shapes = [];
 		private readonly Color Background;
 
 		public Model(Image<Rgba32> target)
@@ -26,7 +26,7 @@ namespace Primitive
 			Background = background;
 		}
 
-		public void Add<T>(int trials, int failures) where T : Shape, new()
+		public void Step<T>(int trials, int failures) where T : IShape, new()
 		{
 			var state = Optimize(Trial<T>(trials), failures);
 			state.Shape.Draw(Canvas);
@@ -34,7 +34,7 @@ namespace Primitive
 			Shapes.Enqueue(state.Shape);
 		}
 
-		private State Trial<T>(int n) where T : Shape, new()
+		private State Trial<T>(int n) where T : IShape, new()
 		{
 			var best = new State(new T());
 			for (var i = 0; i < n; i++)
@@ -42,7 +42,6 @@ namespace Primitive
 				var shape = new T();
 				var canvas = Canvas.Clone();
 
-				shape.Randomize();
 				shape.Sample(Target);
 				shape.Draw(canvas);
 

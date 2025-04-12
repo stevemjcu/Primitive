@@ -7,22 +7,33 @@ using System.Numerics;
 
 namespace Primitive.Shapes
 {
-	internal class Ellipse : Shape
+	internal class Ellipse : IShape
 	{
 		private const float MinSize = .01f;
 		private const float DefaultAlpha = .5f;
+        private readonly static Random Rand = new();
 
-		public Vector2 Position { get; private set; }
+        public Vector4 Color { get; private set; }
+
+        public Vector2 Position { get; private set; }
 
 		public Vector2 Size { get; private set; }
 
-		public override void Randomize()
+		public Ellipse()
+		{
+            Position = Rand.NextVector2();
+            Size = Helper.Clamp(Rand.NextVector2(), MinSize, 1);
+        }
+
+		public IShape Clone() => (IShape)MemberwiseClone();
+
+		public void Randomize()
 		{
 			Position = Rand.NextVector2();
 			Size = Helper.Clamp(Rand.NextVector2(), MinSize, 1);
 		}
 
-		public override void Mutate()
+		public void Mutate()
 		{
 			switch (Rand.Next(3))
 			{
@@ -41,20 +52,20 @@ namespace Primitive.Shapes
 			}
 		}
 
-		public override void Sample(Image<Rgba32> image)
+		public void Sample(Image<Rgba32> image)
 		{
 			var area = Bounds(image.Bounds);
 			Color = (Vector4)Helper.AverageColor(image, area).WithAlpha(DefaultAlpha);
 		}
 
-		public override void Draw(Image<Rgba32> image)
+		public void Draw(Image<Rgba32> image)
 		{
 			var (position, size) = (Position * image.Width, Size * image.Width);
 			var path = new EllipsePolygon(position, new SizeF(size));
 			image.Mutate(x => x.Fill(new Color(Color), path));
 		}
 
-		public override Rectangle Bounds(Rectangle area)
+		public Rectangle Bounds(Rectangle area)
 		{
 			var (position, size) = (Position * area.Width, Size * area.Width);
 			return new(Point.Round(position - size / 2), new(Point.Round(size)));

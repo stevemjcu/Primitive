@@ -76,9 +76,12 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 			? new Model(input)
 			: new Model(input, Color.Parse(settings.Background));
 
+		void Step<T>() where T : IShape, new() =>
+			model.Step<T>(settings.Trials, settings.Failures);
+
 		var action = (Action)(settings.Shape switch
 		{
-			"Ellipse" => () => model.Add<Ellipse>(settings.Trials, settings.Failures),
+			"Ellipse" => Step<Ellipse>,
 			_ => throw new Exception(Resources.ErrorInvalidShape)
 		});
 
@@ -96,8 +99,8 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 		});
 
 		stopwatch.Stop();
-		AnsiConsole.MarkupLine(string.Format(
-			Resources.MessageElapsedTime, stopwatch.Elapsed.ToString("c")));
+		AnsiConsole.MarkupLine(
+			string.Format(Resources.MessageElapsedTime, stopwatch.Elapsed.ToString("c")));
 
 		using var output = model.Export(settings.OutputSize);
 		output.Save(settings.OutputPath);
