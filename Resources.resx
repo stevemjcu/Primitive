@@ -151,7 +151,7 @@
     <value>Invalid shape</value>
   </data>
   <data name="MessageElapsedTime" xml:space="preserve">
-    <value>Elapsed time: [green]{0}[/]</value>
+    <value>Elapsed time: [blue]{0}[/]</value>
   </data>
   <data name="MessageProgress" xml:space="preserve">
     <value>Adding shapes:</value>

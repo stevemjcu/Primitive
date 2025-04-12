@@ -9,7 +9,7 @@ namespace Primitive.Shapes
 {
 	internal class Ellipse : IShape
 	{
-		private const float MinSize = .01f;
+		private const float MinSize = .02f;
 		private const float DefaultAlpha = .5f;
 		private readonly static Random Rand = new();
 

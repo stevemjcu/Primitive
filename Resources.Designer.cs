@@ -160,7 +160,7 @@ namespace Primitive {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Elapsed time: [green]{0}[/].
+        ///   Looks up a localized string similar to Elapsed time: [blue]{0}[/].
         /// </summary>
         internal static string MessageElapsedTime {
             get {

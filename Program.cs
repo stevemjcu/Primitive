@@ -88,19 +88,26 @@ internal sealed class RootCommand : Command<RootCommand.Settings>
 		var stopwatch = new Stopwatch();
 		stopwatch.Start();
 
-		AnsiConsole.Progress().Start(ctx =>
-		{
-			var task = ctx.AddTask(Resources.MessageProgress, true, settings.Iterations);
-			while (!ctx.IsFinished)
+		AnsiConsole
+			.Progress()
+			.Columns(
+				new TaskDescriptionColumn(),
+				new ProgressBarColumn(),
+				new RemainingTimeColumn())
+			.Start(ctx =>
 			{
-				action.Invoke();
-				task.Increment(1);
-			}
-		});
+				var task = ctx.AddTask(Resources.MessageProgress, true, settings.Iterations);
+				while (!ctx.IsFinished)
+				{
+					action.Invoke();
+					task.Increment(1);
+				}
+			});
 
 		stopwatch.Stop();
-		AnsiConsole.MarkupLine(
-			string.Format(Resources.MessageElapsedTime, stopwatch.Elapsed.ToString("c")));
+		AnsiConsole.MarkupLine(string.Format(
+			Resources.MessageElapsedTime,
+			stopwatch.Elapsed.ToString(@"hh\:mm\:ss")));
 
 		using var output = model.Export(settings.OutputSize);
 		output.Save(settings.OutputPath);
