@@ -64,18 +64,12 @@ namespace Primitive
 		public override int Execute(CommandContext context, Settings settings)
 		{
 			using var input = Image.Load<Rgba32>(settings.InputPath);
-			input.Mutate(x => x.Resize(new ResizeOptions
-			{
-				Size = new(settings.ComputationSize, settings.ComputationSize)
-			}));
+			input.Mutate(x => x.Resize(new ResizeOptions { Size = new(settings.ComputationSize, settings.ComputationSize) }));
 
-			var model = settings.Background == string.Empty
-				? new Model(input)
-				: new Model(input, Color.Parse(settings.Background));
+			var color = settings.Background == string.Empty ? Helper.AverageColor(input) : Color.Parse(settings.Background);
+			using var model = new Model(input, color);
 
-			void Step<T>() where T : IShape, new() =>
-				model.Add<T>(settings.Trials, settings.Failures);
-
+			void Step<T>() where T : IShape, new() => model.Add<T>(settings.Trials, settings.Failures);
 			var action = (Action)(settings.Shape switch
 			{
 				"Ellipse" => Step<Ellipse>,
@@ -87,10 +81,7 @@ namespace Primitive
 
 			AnsiConsole
 				.Progress()
-				.Columns(
-					new TaskDescriptionColumn(),
-					new ProgressBarColumn(),
-					new RemainingTimeColumn())
+				.Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new RemainingTimeColumn())
 				.Start(ctx =>
 				{
 					var task = ctx.AddTask(Resources.MessageProgress, true, settings.Iterations);
@@ -102,12 +93,12 @@ namespace Primitive
 				});
 
 			stopwatch.Stop();
-			AnsiConsole.MarkupLine(string.Format(
-				Resources.MessageElapsedTime,
-				stopwatch.Elapsed.ToString(@"hh\:mm\:ss")));
+			AnsiConsole.MarkupLine(string.Format(Resources.MessageElapsedTime, stopwatch.Elapsed.ToString(@"hh\:mm\:ss")));
 
-			using var output = model.Export(settings.OutputSize);
+			using var output = new Image<Rgba32>(settings.OutputSize, settings.OutputSize, color);
+			foreach (var s in model.Shapes) s.Draw(output);
 			output.Save(settings.OutputPath);
+
 			return 0;
 		}
 	}
