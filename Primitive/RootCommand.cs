@@ -81,7 +81,7 @@ namespace Primitive
 
 			AnsiConsole
 				.Progress()
-				.Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new RemainingTimeColumn())
+				.Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn())
 				.Start(ctx =>
 				{
 					var task = ctx.AddTask(Resources.MessageProgress, true, settings.Iterations);

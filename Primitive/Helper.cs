@@ -8,8 +8,7 @@ namespace Primitive
 	{
 		#region Image
 
-		public static Color AverageColor(Image<Rgba32> image)
-			=> AverageColor(image, image.Bounds);
+		public static Color AverageColor(Image<Rgba32> image) => AverageColor(image, image.Bounds);
 
 		public static Color AverageColor(Image<Rgba32> image, Rectangle area)
 		{
@@ -36,15 +35,14 @@ namespace Primitive
 		}
 
 		public static float RootMeanSquareError(
-			Image<Rgba32> before, Image<Rgba32> after, Image<Rgba32> target,
-			Rectangle area, float error)
+			Image<Rgba32> source, Image<Rgba32> target, Image<Rgba32> prevSource, float prevError, Rectangle area)
 		{
-			area = Rectangle.Intersect(before.Bounds, area);
-			var channels = before.Height * before.Width * 4;
+			area = Rectangle.Intersect(prevSource.Bounds, area);
+			var channels = prevSource.Height * prevSource.Width * 4;
 
-			var sum = (float)Math.Pow(error, 2) * channels;
-			sum -= SquareErrorSum(before, target, area);
-			sum += SquareErrorSum(after, target, area);
+			var sum = (float)Math.Pow(prevError, 2) * channels;
+			sum -= SquareErrorSum(prevSource, target, area);
+			sum += SquareErrorSum(source, target, area);
 			return (float)Math.Sqrt(sum / channels);
 		}
 
@@ -107,8 +105,7 @@ namespace Primitive
 			);
 		}
 
-		public static int NextSign(this Random rand)
-			=> rand.Next(2) * 2 - 1;
+		public static int NextSign(this Random rand) => rand.Next(2) * 2 - 1;
 
 		public static Vector2 Clamp(Vector2 val, float min, float max)
 		{
@@ -128,8 +125,7 @@ namespace Primitive
 			);
 		}
 
-		public static float Sum(this Vector4 val)
-			=> val.X + val.Y + val.Z + val.W;
+		public static float Sum(this Vector4 val) => val.X + val.Y + val.Z + val.W;
 
 		#endregion
 	}

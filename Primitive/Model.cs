@@ -5,7 +5,7 @@ namespace Primitive
 {
 	internal class Model : IDisposable
 	{
-		private record State(IShape Shape, Image<Rgba32> Image, float Score = float.MaxValue);
+		private record State(IShape Shape, Image<Rgba32> Image, float Error = float.MaxValue);
 
 		/// <summary>
 		/// The image the model is trying to recreate.
@@ -18,20 +18,25 @@ namespace Primitive
 		public Image<Rgba32> Current { get; private set; }
 
 		/// <summary>
-		/// The Root Mean Square Error (RMSE) between the current and target images (lower is better).
+		/// The difference between the current and target images.
 		/// </summary>
-		public float Score { get; private set; }
+		public float Error { get; private set; }
 
 		/// <summary>
 		/// The ordered list of shapes which comprise the current image.
 		/// </summary>
-		public Queue<IShape> Shapes { get; } = [];
+		public List<IShape> Shapes { get; } = [];
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Model"/> class.
+		/// </summary>
+		/// <param name="target">The input image.</param>
+		/// <param name="background">The initial color of the output image.</param>
 		public Model(Image<Rgba32> target, Color background)
 		{
 			Target = target;
 			Current = new(target.Width, target.Height, background);
-			Score = Helper.RootMeanSquareError(Current, target);
+			Error = Helper.RootMeanSquareError(Current, target);
 		}
 
 		public void Dispose()
@@ -41,19 +46,19 @@ namespace Primitive
 		}
 
 		/// <summary>
-		/// Adds a shape to the model using a hillclimbing algorithm.<br />
+		/// Adds an <see cref="IShape"/> to the model using a hill climbing algorithm.<br />
 		/// 1. Randomly generates shapes and determines the best one.<br />
 		/// 2. Randomly mutates the shape until reaching a local maxima.
 		/// </summary>
 		/// <typeparam name="T">The type of shape to use.</typeparam>
-		/// <param name="trials">The number of shapes to generate initially.</param>
+		/// <param name="trials">The number of shapes to generate before starting.</param>
 		/// <param name="failures">The number of suboptimal mutations before stopping.</param>
 		public void Add<T>(int trials, int failures) where T : IShape, new()
 		{
 			var best = OptimizeShape(TrialShapes<T>(trials), failures);
 			Current = best.Image;
-			Score = best.Score;
-			Shapes.Enqueue(best.Shape);
+			Error = best.Error;
+			Shapes.Add(best.Shape);
 		}
 
 		private State TrialShapes<T>(int count) where T : IShape, new()
@@ -64,18 +69,18 @@ namespace Primitive
 			Parallel.For(0, count, i =>
 			{
 				var shape = new T();
-				var next = Current.Clone();
+				var image = Current.Clone();
 
 				shape.Sample(Target);
-				shape.Draw(next);
+				shape.Draw(image);
 
-				var score = Helper.RootMeanSquareError(
-					Current, next, Target, shape.Bounds(next.Bounds), Score);
+				var error = Helper.RootMeanSquareError(
+					image, Target, Current, Error, shape.Bounds(image.Bounds));
 
 				lock (bestLock)
 				{
-					if (score < best.Score)
-						best = new(shape, next, score);
+					if (error < best.Error)
+						best = new(shape, image, error);
 				}
 			});
 
@@ -89,16 +94,16 @@ namespace Primitive
 			for (var i = 0; i < limit; i++)
 			{
 				var shape = best.Shape.Clone();
-				var next = Current.Clone();
+				var image = Current.Clone();
 
 				shape.Mutate();
-				shape.Draw(next);
+				shape.Draw(image);
 
-				var score = Helper.RootMeanSquareError(
-					Current, next, Target, shape.Bounds(next.Bounds), Score);
+				var error = Helper.RootMeanSquareError(
+					image, Target, Current, Error, shape.Bounds(image.Bounds));
 
-				if (score < best.Score)
-					(best, i) = (new(shape, next, score), 0);
+				if (error < best.Error)
+					(best, i) = (new(shape, image, error), 0);
 			}
 
 			return best;
