@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Primitive.Cli/Primitive.Cli.csproj" />
+  <Project Path="Primitive/Primitive.csproj" />
+</Solution>
