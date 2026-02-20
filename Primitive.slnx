@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="Primitive.Cli/Primitive.Cli.csproj" />
+  <Project Path="Primitive.Wpf/Primitive.Wpf.csproj" Id="0a4bbb57-b3f4-425f-9850-6d7397912cff" />
   <Project Path="Primitive/Primitive.csproj" />
 </Solution>
