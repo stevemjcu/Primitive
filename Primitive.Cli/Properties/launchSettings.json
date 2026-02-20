@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "Primitive.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\stephen.justice\\source\\repos\\Primitive\\Samples\\Beach.jpg\"\r\n\"C:\\Users\\stephen.justice\\source\\repos\\Primitive\\Samples\\Output.png\"\r\nEllipse\r\n--iterations 300\r\n--trials 200\r\n--failures 50"
+    }
+  }
+}

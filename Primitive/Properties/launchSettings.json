@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Primitive": {
-      "commandName": "Project",
-      "commandLineArgs": "\"..\\..\\..\\Samples\\PalmTrees.jpg\"\r\n\"..\\..\\..\\Samples\\Output.png\"\r\nEllipse\r\n--iterations 200\r\n--trials 200\r\n--failures 30"
-    }
-  }
-}
