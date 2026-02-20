@@ -1,66 +1,17 @@
 ﻿using Primitive.Shapes;
+using Primitive.Utility;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using System.ComponentModel;
 using System.Diagnostics;
 using Color = SixLabors.ImageSharp.Color;
 
 namespace Primitive.Cli
 {
-    internal class RootCommand : Command<RootCommand.Settings>
+    internal class RootCommand : Command<Settings>
     {
-        public class ResourceDescriptionAttribute(string key)
-            : DescriptionAttribute(Resources.ResourceManager.GetString(key)!)
-        { }
-
-        public class Settings : CommandSettings
-        {
-            [ResourceDescription("DescriptionInputPath")]
-            [CommandArgument(0, "<InputPath>")]
-            public required string InputPath { get; set; }
-
-            [ResourceDescription("DescriptionOutputPath")]
-            [CommandArgument(1, "<OutputPath>")]
-            public required string OutputPath { get; set; }
-
-            [ResourceDescription("DescriptionShape")]
-            [CommandArgument(2, "<Shape>")]
-            public required string Shape { get; set; }
-
-            [ResourceDescription("DescriptionIterations")]
-            [CommandOption("--iterations")]
-            [DefaultValue(200)]
-            public int Iterations { get; set; }
-
-            [ResourceDescription("DescriptionTrials")]
-            [CommandOption("--trials")]
-            [DefaultValue(200)]
-            public int Trials { get; set; }
-
-            [ResourceDescription("DescriptionFailures")]
-            [CommandOption("--failures")]
-            [DefaultValue(30)]
-            public int Failures { get; set; }
-
-            [ResourceDescription("DescriptionBackground")]
-            [CommandOption("--background")]
-            [DefaultValue("")]
-            public required string Background { get; set; }
-
-            [ResourceDescription("DescriptionComputationSize")]
-            [CommandOption("--computation-size")]
-            [DefaultValue(256)]
-            public int ComputationSize { get; set; }
-
-            [ResourceDescription("DescriptionOutputSize")]
-            [CommandOption("--output-size")]
-            [DefaultValue(512)]
-            public int OutputSize { get; set; }
-        }
-
         public override int Execute(CommandContext context, Settings settings, CancellationToken _)
         {
             using var input = Image.Load<Rgba32>(settings.InputPath);

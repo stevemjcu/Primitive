@@ -2,12 +2,10 @@
 using SixLabors.ImageSharp.PixelFormats;
 using System.Numerics;
 
-namespace Primitive
+namespace Primitive.Utility
 {
     public static class Helper
     {
-        #region Image
-
         public static Color AverageColor(Image<Rgba32> image)
         {
             return AverageColor(image, image.Bounds);
@@ -68,51 +66,6 @@ namespace Primitive
             return sum;
         }
 
-        #endregion
-
-        #region Vector
-
-        public static Vector2 NextVector2(this Random rand)
-        {
-            return new(
-                rand.NextSingle(),
-                rand.NextSingle()
-            );
-        }
-
-        public static Vector2 NextVector2Signed(this Random rand)
-        {
-            return new(
-                rand.NextSingle() * rand.NextSign(),
-                rand.NextSingle() * rand.NextSign()
-            );
-        }
-
-        public static Vector4 NextVector4(this Random rand)
-        {
-            return new(
-                rand.NextSingle(),
-                rand.NextSingle(),
-                rand.NextSingle(),
-                rand.NextSingle()
-            );
-        }
-
-        public static Vector4 NextVector4Signed(this Random rand)
-        {
-            return new(
-                rand.NextSingle() * rand.NextSign(),
-                rand.NextSingle() * rand.NextSign(),
-                rand.NextSingle() * rand.NextSign(),
-                rand.NextSingle() * rand.NextSign()
-            );
-        }
-
-        public static int NextSign(this Random rand)
-        {
-            return rand.Next(2) * 2 - 1;
-        }
-
         public static Vector2 Clamp(Vector2 val, float min, float max)
         {
             return new(
@@ -135,7 +88,5 @@ namespace Primitive
         {
             return val.X + val.Y + val.Z + val.W;
         }
-
-        #endregion
     }
 }

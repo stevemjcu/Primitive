@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using Primitive.Utility;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace Primitive
