@@ -10,9 +10,9 @@ using Color = SixLabors.ImageSharp.Color;
 
 namespace Primitive.Cli
 {
-    internal class RootCommand : Command<Settings>
+    internal class RootCommand : Command<RootSettings>
     {
-        public override int Execute(CommandContext context, Settings settings, CancellationToken _)
+        public override int Execute(CommandContext context, RootSettings settings, CancellationToken _)
         {
             using var input = Image.Load<Rgba32>(settings.InputPath);
             input.Mutate(x => x.Resize(new ResizeOptions { Size = new(settings.ComputationSize, settings.ComputationSize) }));

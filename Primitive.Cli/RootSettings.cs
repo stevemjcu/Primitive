@@ -1,10 +1,9 @@
 ﻿using Spectre.Console.Cli;
 using System.ComponentModel;
-using static Primitive.Cli.RootCommand;
 
 namespace Primitive.Cli
 {
-    public class Settings : CommandSettings
+    public class RootSettings : CommandSettings
     {
         [ResourceDescription("DescriptionInputPath")]
         [CommandArgument(0, "<InputPath>")]
