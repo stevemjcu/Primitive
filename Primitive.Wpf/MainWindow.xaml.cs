@@ -11,14 +11,5 @@ namespace Primitive.Wpf
         {
             InitializeComponent();
         }
-
-        private void ButtonAddName_Click(object sender, RoutedEventArgs e)
-        {
-            if (!string.IsNullOrEmpty(txtName.Text))
-            {
-                lstNames.Items.Add(txtName.Text);
-                txtName.Clear();
-            }
-        }
     }
 }
