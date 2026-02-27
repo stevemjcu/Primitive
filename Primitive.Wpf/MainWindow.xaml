@@ -21,30 +21,44 @@
         <StackPanel Grid.Row="1" Grid.Column="0">
             <StackPanel Orientation="Horizontal">
                 <Label>Target Image:</Label>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label>Shape:</Label>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label>Iterations:</Label>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label>Trials:</Label>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label>Failures:</Label>
+                <TextBox>C:\Mock.jpg</TextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label>Working Resolution:</Label>
+                <TextBox>256</TextBox>
+                <Label>x</Label>
+                <TextBox>256</TextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label>Output Resolution:</Label>
+                <TextBox>512</TextBox>
+                <Label>x</Label>
+                <TextBox>512</TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Shape:</Label>
+                <ComboBox>
+                    Ellipse
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Iterations:</Label>
+                <TextBox>200</TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Trials:</Label>
+                <TextBox>100</TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Failures:</Label>
+                <TextBox>50</TextBox>
             </StackPanel>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal">
             <Button x:Name="btnReset" Margin="2">Reset</Button>
         </StackPanel>
-        <Label Grid.Row="0" Grid.Column="1" >Results</Label>
+        <Label Grid.Row="0" Grid.Column="1" >Output</Label>
+        <Image x:Name="imgOutput" Grid.Row="1" Grid.Column="1" />
         <Label Grid.Row="0" Grid.Column="2" >Statistics</Label>
         <StackPanel Grid.Row="1" Grid.Column="2">
             <StackPanel Orientation="Horizontal">
