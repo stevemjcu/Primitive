@@ -7,6 +7,19 @@
         mc:Ignorable="d"
         Title="Primitive" Height="480" Width="720"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <Window.Resources>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Padding" Value="5,2"/>
+            <Setter Property="Margin" Value="2"/>
+        </Style>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="MinWidth" Value="30"/>
+        </Style>
+        <Style TargetType="{x:Type ComboBox}">
+            <Setter Property="Height" Value="20"/>
+        </Style>
+    </Window.Resources>
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -14,15 +27,15 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="200" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="200" />
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="0" >Parameters</Label>
         <StackPanel Grid.Row="1" Grid.Column="0">
             <StackPanel Orientation="Horizontal">
                 <Label>Target Image:</Label>
-                <TextBox>C:\Mock.jpg</TextBox>
+                <TextBox Text="{Binding TargetPath}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label>Working Resolution:</Label>
@@ -54,26 +67,29 @@
             </StackPanel>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal">
-            <Button x:Name="btnReset" Margin="2">Reset</Button>
+            <Button x:Name="btnReset">Reset</Button>
         </StackPanel>
         <Label Grid.Row="0" Grid.Column="1" >Output</Label>
-        <Image Grid.Row="1" Grid.Column="1" Source="{Binding OutputSource}"/>
+        <Image Grid.Row="1" Grid.Column="1" Source="{Binding OutputSource}" />
         <Label Grid.Row="0" Grid.Column="2" >Statistics</Label>
         <StackPanel Grid.Row="1" Grid.Column="2">
             <StackPanel Orientation="Horizontal">
                 <Label>Elapsed Time:</Label>
+                <Label>00:00:00</Label>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label>Shapes:</Label>
+                <Label>0</Label>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label>Score:</Label>
+                <Label>0</Label>
             </StackPanel>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" FlowDirection="RightToLeft">
-            <Button x:Name="btnClear" Margin="2">Clear</Button>
-            <Button x:Name="btnSave" Margin="2">Save</Button>
-            <Button x:Name="btnRun" Margin="2">Run</Button>
+            <Button x:Name="btnClear">Clear</Button>
+            <Button x:Name="btnSave">Save</Button>
+            <Button x:Name="btnRun">Run</Button>
         </StackPanel>
     </Grid>
 </Window>

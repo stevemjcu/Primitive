@@ -11,7 +11,9 @@ namespace Primitive.Wpf
     public partial class MainWindow : Window
     {
         private readonly List<string> Shapes = ["Ellipse"];
-        private readonly string OutputPath = @"C:\Users\stephen.justice\source\repos\Primitive\Samples\Output.png";
+        private const string OutputPath = @"C:\Users\stephen.justice\source\repos\Primitive\Samples\Output.png";
+
+        public string TargetPath { get; set; } = string.Empty;
 
         public ObservableCollection<ComboBoxItem> ShapeItems { get; set; }
 
