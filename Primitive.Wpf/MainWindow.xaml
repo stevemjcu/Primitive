@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Primitive.Wpf"
         mc:Ignorable="d"
-        Title="Primitive" Height="480" Width="720">
+        Title="Primitive" Height="480" Width="720"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -37,9 +38,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label>Shape:</Label>
-                <ComboBox>
-                    Ellipse
-                </ComboBox>
+                <ComboBox ItemsSource="{Binding ShapeItems}" SelectedIndex="0" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label>Iterations:</Label>
@@ -58,7 +57,7 @@
             <Button x:Name="btnReset" Margin="2">Reset</Button>
         </StackPanel>
         <Label Grid.Row="0" Grid.Column="1" >Output</Label>
-        <Image x:Name="imgOutput" Grid.Row="1" Grid.Column="1" />
+        <Image Grid.Row="1" Grid.Column="1" Source="{Binding OutputSource}"/>
         <Label Grid.Row="0" Grid.Column="2" >Statistics</Label>
         <StackPanel Grid.Row="1" Grid.Column="2">
             <StackPanel Orientation="Horizontal">
