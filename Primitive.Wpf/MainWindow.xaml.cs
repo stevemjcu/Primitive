@@ -1,31 +1,43 @@
-﻿using System.Collections.ObjectModel;
+﻿using Microsoft.Win32;
+using Primitive.Shapes;
+using Primitive.Utility;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace Primitive.Wpf
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private readonly List<string> ShapeEnum = ["Ellipse"];
         private const string OutputPath = @"C:\Users\stephen.justice\source\repos\Primitive\Samples\Output.png";
 
         #region Input
 
-        public string TargetPath { get; set; } = string.Empty;
+        public string TargetPath
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged(nameof(TargetPath));
+            }
+        } = "...";
 
-        public int WorkingResolutionX { get; set; } = 256;
+        public string AspectRatio { get; set; } = "1:1";
 
-        public int WorkingResolutionY { get; set; } = 256;
+        public int WorkingResolution { get; set; } = 256;
 
-        public int OutputResolutionX { get; set; } = 512;
+        public int OutputResolution { get; set; } = 512;
 
-        public int OutputResolutionY { get; set; } = 512;
-
-        public ObservableCollection<ComboBoxItem> ShapeItems { get; set; }
+        public List<string> ShapeItems { get; set; }
 
         public int Iterations { get; set; } = 200;
 
@@ -37,7 +49,7 @@ namespace Primitive.Wpf
 
         #region Output
 
-        public BitmapImage OutputSource { get; set; }
+        public BitmapImage OutputImage { get; set; }
 
         public TimeSpan ElapsedTime { get; set; } = TimeSpan.Zero;
 
@@ -47,17 +59,49 @@ namespace Primitive.Wpf
 
         #endregion
 
+        private Model Model = null!;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string name = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
         public MainWindow()
         {
-            ShapeItems = new(ShapeEnum.Select(it => new ComboBoxItem() { Content = it }));
-            OutputSource = new(new Uri(OutputPath));
+            ShapeItems = [.. ShapeEnum];
+            OutputImage = new(new Uri(OutputPath));
 
             InitializeComponent();
         }
 
-        private void Step()
+        public void OnUpload(object sender, RoutedEventArgs e)
         {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Image files (*.png;*.jpg)|*.png;*.jpg|All files (*.*)|*.*"
+            };
 
+            if (dialog.ShowDialog() == true)
+            {
+                TargetPath = dialog.FileName;
+            }
+        }
+
+        private void Initialize(object sender, RoutedEventArgs e)
+        {
+            var input = Image.Load<Rgba32>(TargetPath);
+            input.Mutate(x => x.Resize(new ResizeOptions { Size = new(WorkingResolution, WorkingResolution) }));
+            Model = new Model(input, Helper.AverageColor(input));
+        }
+
+        private void Step(object sender, RoutedEventArgs e)
+        {
+            Model.Add<Ellipse>(Trials, Failures);
+            Shapes++;
+
+            // TODO: Update output image and stats
         }
     }
 }

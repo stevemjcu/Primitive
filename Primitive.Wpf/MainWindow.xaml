@@ -37,19 +37,22 @@
         <StackPanel Grid.Row="1" Grid.Column="0">
             <StackPanel Orientation="Horizontal">
                 <Label>Target Image:</Label>
-                <TextBox Text="{Binding TargetPath}" />
+                <Button Click="OnUpload">Upload</Button>
+            </StackPanel>
+            <Label Content="{Binding TargetPath}" />
+            <StackPanel Orientation="Horizontal">
+                <Label>Aspect Ratio:</Label>
+                <TextBox Text="{Binding AspectRatio}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label>Working Resolution:</Label>
-                <TextBox Text="{Binding WorkingResolutionX}" />
-                <Label>x</Label>
-                <TextBox Text="{Binding WorkingResolutionY}" />
+                <TextBox Text="{Binding WorkingResolution}" />
+                <Label>px</Label>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label>Output Resolution:</Label>
-                <TextBox Text="{Binding OutputResolutionX}" />
-                <Label>x</Label>
-                <TextBox Text="{Binding OutputResolutionY}" />
+                <TextBox Text="{Binding OutputResolution}" />
+                <Label>px</Label>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label>Shape:</Label>
@@ -72,7 +75,7 @@
             <Button x:Name="btnReset">Reset</Button>
         </StackPanel>
         <Label Grid.Row="0" Grid.Column="1" >Output</Label>
-        <Image Grid.Row="1" Grid.Column="1" Source="{Binding OutputSource}" />
+        <Image Grid.Row="1" Grid.Column="1" Source="{Binding OutputImage}" />
         <Label Grid.Row="0" Grid.Column="2" >Statistics</Label>
         <StackPanel Grid.Row="1" Grid.Column="2">
             <StackPanel Orientation="Horizontal">
@@ -89,8 +92,8 @@
             </StackPanel>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" FlowDirection="RightToLeft">
-            <Button x:Name="btnClear">Clear</Button>
             <Button x:Name="btnSave">Save</Button>
+            <Button x:Name="btnClear">Clear</Button>
             <Button x:Name="btnStep">Step</Button>
             <Button x:Name="btnRun">Run</Button>
         </StackPanel>
