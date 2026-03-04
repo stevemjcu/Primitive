@@ -12,6 +12,10 @@
             <Setter Property="Padding" Value="5,2"/>
             <Setter Property="Margin" Value="2"/>
         </Style>
+        <Style TargetType="{x:Type RepeatButton}">
+            <Setter Property="Padding" Value="5,2"/>
+            <Setter Property="Margin" Value="2"/>
+        </Style>
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="Height" Value="20"/>
             <Setter Property="MinWidth" Value="30"/>
@@ -94,7 +98,7 @@
         <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" FlowDirection="RightToLeft">
             <Button x:Name="btnSave">Save</Button>
             <Button x:Name="btnClear">Clear</Button>
-            <Button x:Name="btnStep">Step</Button>
+            <RepeatButton x:Name="btnStep" Click="OnStep">Step</RepeatButton>
             <Button x:Name="btnRun">Run</Button>
         </StackPanel>
     </Grid>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Primitive.Shapes;
 using Primitive.Utility;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System.ComponentModel;
@@ -17,7 +18,6 @@ namespace Primitive.Wpf
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private readonly List<string> ShapeEnum = ["Ellipse"];
-        private const string OutputPath = @"C:\Users\stephen.justice\source\repos\Primitive\Samples\Output.png";
 
         #region Input
 
@@ -49,17 +49,25 @@ namespace Primitive.Wpf
 
         #region Output
 
-        public BitmapImage OutputImage { get; set; }
+        public BitmapImage? OutputImage { get; set; } = null;
 
         public TimeSpan ElapsedTime { get; set; } = TimeSpan.Zero;
 
-        public int Shapes { get; set; } = 0;
+        public int Shapes
+        {
+            get;
+            set
+            {
+                field = value;
+                OnPropertyChanged(nameof(Shapes));
+            }
+        } = 0;
 
         public float Score { get; set; } = 0;
 
         #endregion
 
-        private Model Model = null!;
+        private Model? Model = null;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -71,7 +79,6 @@ namespace Primitive.Wpf
         public MainWindow()
         {
             ShapeItems = [.. ShapeEnum];
-            OutputImage = new(new Uri(OutputPath));
 
             InitializeComponent();
         }
@@ -89,19 +96,35 @@ namespace Primitive.Wpf
             }
         }
 
-        private void Initialize(object sender, RoutedEventArgs e)
+        public void OnStep(object sender, RoutedEventArgs e)
+        {
+            if (Model is null)
+            {
+                Initialize();
+            }
+
+            Model!.Add<Ellipse>(Trials, Failures);
+            Shapes++;
+
+            // FIXME: Memory leak
+
+            using var stream = new System.IO.MemoryStream();
+            Model.Current.SaveAsBmp(stream);
+
+            OutputImage = new BitmapImage();
+            OutputImage.BeginInit();
+            OutputImage.StreamSource = stream;
+            OutputImage.CacheOption = BitmapCacheOption.OnLoad;
+            OutputImage.EndInit();
+
+            OnPropertyChanged(nameof(OutputImage));
+        }
+
+        private void Initialize()
         {
             var input = Image.Load<Rgba32>(TargetPath);
             input.Mutate(x => x.Resize(new ResizeOptions { Size = new(WorkingResolution, WorkingResolution) }));
             Model = new Model(input, Helper.AverageColor(input));
-        }
-
-        private void Step(object sender, RoutedEventArgs e)
-        {
-            Model.Add<Ellipse>(Trials, Failures);
-            Shapes++;
-
-            // TODO: Update output image and stats
         }
     }
 }
